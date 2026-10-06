@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>弟子屈町議会 動画目次（非公式）</title>
+<link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#f6f8fb;--card:#fff;--ink:#1b2430;--sub:#4a5565;--line:#b8c2d0;--pri:#17358a;--priink:#fff;--mark:#fff3b0;--fs:18px;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10151d;--card:#18202b;--ink:#f1f4f8;--sub:#b9c3d1;--line:#52607a;--pri:#9db8ff;--priink:#0d1a3d;--mark:#5b4b00}}
+:root[data-theme="dark"]{--bg:#10151d;--card:#18202b;--ink:#f1f4f8;--sub:#b9c3d1;--line:#52607a;--pri:#9db8ff;--priink:#0d1a3d;--mark:#5b4b00}
+*,*::before,*::after{box-sizing:inherit}
+html{font-size:var(--fs)}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",Meiryo,sans-serif;line-height:1.8}
+.wrap{max-width:46rem;margin:0 auto;padding:1rem}
+h1{font-size:1.5rem;line-height:1.4;margin:.5rem 0}
+h2{font-size:1.2rem;margin:1.6rem 0 .6rem;padding-left:.6rem;border-left:.4rem solid var(--pri)}
+.notice{border:2px solid var(--line);background:var(--card);padding:.7rem .9rem;border-radius:.4rem;font-size:.9rem;color:var(--sub)}
+.notice strong{color:var(--ink)}
+.tools{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0}
+button,input{font:inherit;color:inherit}
+button{min-height:2.75rem;padding:.3rem 1rem;border:2px solid var(--pri);background:var(--card);color:var(--pri);border-radius:.4rem;cursor:pointer;font-weight:700}
+button[aria-pressed="true"]{background:var(--pri);color:var(--priink)}
+button.ui{min-height:2.5rem;padding:.2rem .8rem;border:1px solid var(--line);background:transparent;color:var(--sub);font-weight:400;font-size:.85rem;display:inline-flex;align-items:center;gap:.4rem}
+button.ui[aria-pressed="true"]{background:var(--line);color:var(--ink)}
+.ico{width:1.1em;height:1.1em;transition:transform .25s}
+button.flip .ico{transform:scaleY(-1)}
+@media (prefers-reduced-motion:reduce){.ico{transition:none}}
+.row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem;margin:.6rem 0}
+:focus-visible{outline:3px solid #e07a00;outline-offset:2px}
+label{display:block;font-weight:700;margin-top:.8rem}
+input[type=search]{width:100%;min-height:2.9rem;padding:.4rem .8rem;border:2px solid var(--line);border-radius:.4rem;background:var(--card)}
+.count{color:var(--sub);margin:.6rem 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:.4rem;padding:.8rem 1rem;margin:.7rem 0}
+.card h3{font-size:1.05rem;line-height:1.5;margin:0 0 .3rem}
+.meta{margin:0;color:var(--sub);font-size:.9rem}
+.tag{display:inline-block;border:1px solid var(--pri);color:var(--pri);border-radius:.3rem;padding:0 .5rem;font-size:.85rem;font-weight:700;margin-right:.4rem}
+details{margin-top:.5rem}
+summary{cursor:pointer;font-weight:700;padding:.3rem 0;min-height:2.5rem}
+ul.items{margin:.3rem 0;padding-left:0;list-style:none}
+ul.items li{padding:.2rem 0;border-top:1px solid var(--line)}
+.t{font-variant-numeric:tabular-nums;font-weight:700;margin-right:.6rem}
+a{color:var(--pri);font-weight:700}
+mark{background:var(--mark);color:inherit}
+.gist{white-space:pre-line}
+.empty{border:2px dashed var(--line);padding:1rem;border-radius:.4rem}
+h3.sub{font-size:1.05rem;margin:1.1rem 0 .1rem;color:var(--sub)}
+footer{margin:2rem 0 1rem;color:var(--sub);font-size:.85rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+<h1>弟子屈町議会 動画目次</h1>
+<p class="notice"><strong>非公式の目次サイトです。</strong>弟子屈町議会の公式YouTubeチャンネルの動画を、探しやすく並べています。動画は議会の公式記録ではありません。</p>
+<p class="meta" id="upd"></p>
+
+<div class="tools" role="group" aria-label="表示の切り替え">
+<button type="button" data-view="session" aria-pressed="true">議会ごと</button>
+<button type="button" data-view="year" aria-pressed="false">年別</button>
+<button type="button" data-view="member" aria-pressed="false">議員別</button>
+<button type="button" data-view="all" aria-pressed="false">すべて</button>
+</div>
+<div class="tools" role="group" aria-label="見やすさの設定">
+<button type="button" class="ui" id="big" aria-pressed="false">文字を大きくする</button>
+<button type="button" class="ui" id="dark" aria-pressed="false">暗い画面にする</button>
+</div>
+
+<label for="q">キーワードで探す（例：ヒグマ、複合、議案第70号）</label>
+<input id="q" type="search" autocomplete="off">
+<div class="row"><p class="count" id="count" aria-live="polite" style="margin:0"></p>
+<button type="button" class="ui" id="sort"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 3h14M3 8h10M5.5 13h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>並べ替え</button></div>
+<div id="list"></div>
+
+<footer>この目次は自動で作られた非公式のものです。元の映像は、弟子屈町議会の公式YouTubeチャンネルでご覧ください。</footer>
+</div>
+
+<script>
+const CH="https://www.youtube.com/channel/UCp1bEH7DOpEjf_hjgCmZFlQ";
+const W=v=>"https://www.youtube.com/watch?v="+v.id;
+const sec=t=>t.split(":").reduce((a,x)=>a*60+ +x,0);
+const tl=(v,t)=>v.id?'<a class="t" href="'+W(v)+'&t='+sec(t)+'s" target="_blank" rel="noopener">'+t+'</a>':'<span class="t">'+t+'</span>';
+let V=[];
+function prep(){;
+// タイトルを読み取る（読めない部分は空のまま＝推測しない）
+V.forEach((v,i)=>{
+ const t=v.title;
+ v.id=i;
+ v.session=(t.match(/^(令和\d+年第\d+回(?:定例会|臨時会))/)||[])[1]||"未分類";
+ const ry=+((t.match(/^令和(\d+)年/)||[])[1]||0),mo=+((t.match(/（(\d+)\//)||[])[1]||0);
+ v.fy=ry;
+ const kai=+((t.match(/第(\d+)回/)||[])[1]||0),dn=+((t.match(/(\d+)日目/)||[])[1]||0),cm=t.match(/[\u2460-\u2473]/);
+ v.sk=ry*1e6+kai*1e4+dn*100+(cm?cm[0].charCodeAt(0)-0x245f:0);
+ v.day=(t.match(/(\d+日目)/)||[])[1]||"";
+ v.date=(t.match(/（(\d+\/\d+[^）]*)）/)||[])[1]||"";
+ v.member=(t.match(/一般質問（(.+?)議員）/)||[])[1]||"";
+ v.kind=v.member?"一般質問":/予算特別委員会/.test(t)?"予算特別委員会":/議案/.test(t)?"議案の審議":"その他";
+ v.text=[t,v.q||"",v.gist||"",...(v.items||[]).map(x=>x[1])].join(" ");
+});}
+const list=document.getElementById("list"),count=document.getElementById("count"),q=document.getElementById("q");
+let view="session",asc=false;
+const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function hl(s,k){s=esc(s);if(!k)return s;const e=esc(k).replace(/[.*+?^${}()|[\]\\]/g,"\\$&");return s.replace(new RegExp("("+e+")","gi"),"<mark>$1</mark>")}
+function card(v,k){
+ let h='<article class="card"><h3>'+hl(v.title,k)+'</h3><p class="meta"><span class="tag">'+v.kind+'</span>'+'会議日 '+esc(v.date||"不明")+'　公開日 '+v.pub.replace(/-/g,"/")+'</p>';
+ if(v.q) h+='<p><b>質問事項：</b>'+hl(v.q,k)+'</p><details><summary>質問の要旨を読む</summary><p class="gist">'+hl(v.gist,k)+'</p></details>';
+ if(v.items) h+='<details'+(k?' open':'')+'><summary>この動画の内容（'+v.items.length+'件）</summary><ul class="items">'+v.items.map(x=>'<li>'+tl(v,x[0])+hl(x[1],k)+'</li>').join("")+'</ul></details>';
+ return h+'<p><a href="'+(v.id?W(v):CH)+'" target="_blank" rel="noopener">YouTubeで動画を見る</a></p></article>';
+}
+const fyName=v=>v.fy?"令和"+v.fy+"年":"年不明";
+let YOMI={};
+const cmpY=(a,b)=>(YOMI[a]||a).localeCompare(YOMI[b]||b,"ja");
+const NUM=(a,b)=>b.localeCompare(a,"ja",{numeric:true});
+function group(arr,keyf,order){
+ const m={};arr.forEach(v=>{const g=keyf(v);(m[g]=m[g]||[]).push(v)});
+ const ks=Object.keys(m);return order?ks.sort(order):ks;
+}
+function render(){
+ const k=q.value.trim();
+ let arr=V.filter(v=>!k||v.text.toLowerCase().includes(k.toLowerCase()));
+ arr.sort((a,b)=>asc?a.sk-b.sk:b.sk-a.sk);
+ let h="";
+ if(view==="member"){
+  arr=arr.filter(v=>v.member);
+  group(arr,v=>v.member,(a,b)=>asc?cmpY(b,a):cmpY(a,b)).forEach(g=>{
+   h+='<h2>'+esc(g)+'議員</h2>'+arr.filter(v=>v.member===g).map(v=>card(v,k)).join("")});
+  h+='<p class="meta">「議員別」には、タイトルに議員名がある動画（一般質問）だけが出ます。</p>';
+ }else if(view==="year"){
+  group(arr,fyName).forEach(g=>{
+   const sub=arr.filter(v=>fyName(v)===g),n=sub[0].fy;
+   h+='<h2>'+g+'</h2>'+(n?'<p class="meta">西暦'+(n+2018)+'年（1月～12月に開かれた会議）</p>':'');
+   group(sub,v=>v.session).forEach(s=>{h+='<h3 class="sub">'+esc(s)+'</h3>'+sub.filter(v=>v.session===s).map(v=>card(v,k)).join("")})});
+ }else if(view==="session"){
+  group(arr,v=>v.session).forEach(g=>{
+   h+='<h2>'+esc(g)+'</h2>'+arr.filter(v=>v.session===g).map(v=>card(v,k)).join("")});
+ }else h=arr.map(v=>card(v,k)).join("");
+ if(!arr.length||(view==="member"&&!arr.some(v=>v.member))) h='<p class="empty">条件に合う動画はありません。別の言葉で探してみてください。</p>'+(view==="member"?h:"");
+ list.innerHTML=h;
+ const ord=view==="member"?(asc?"あいうえお順（逆）":"あいうえお順"):(asc?"古い順":"新しい順");
+ sortBtn.classList.toggle("flip",asc);
+ sortBtn.setAttribute("aria-label","並べ替え。いまは"+ord+"。押すと逆になります");
+ count.textContent=arr.length+"本の動画が見つかりました（"+ord+"）";
+}
+const sortBtn=document.getElementById("sort");
+sortBtn.onclick=()=>{asc=!asc;render();};
+document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>{
+ view=b.dataset.view;
+ document.querySelectorAll("[data-view]").forEach(x=>x.setAttribute("aria-pressed",x===b));
+ render();
+});
+q.addEventListener("input",render);
+document.getElementById("big").onclick=e=>{
+ const on=e.target.getAttribute("aria-pressed")!=="true";
+ e.target.setAttribute("aria-pressed",on);
+ document.documentElement.style.setProperty("--fs",on?"22px":"18px");
+};
+document.getElementById("dark").onclick=e=>{
+ const on=e.target.getAttribute("aria-pressed")!=="true";
+ e.target.setAttribute("aria-pressed",on);
+ document.documentElement.dataset.theme=on?"dark":"light";
+};
+fetch("data/members.json",{cache:"no-cache"}).then(r=>r.ok?r.json():{}).catch(()=>({})).then(m=>{YOMI=m;return fetch("data/videos.json",{cache:"no-cache"})}).then(r=>{if(!r.ok)throw 0;return r.json()}).then(d=>{
+ V=d.videos;prep();document.getElementById("upd").textContent="最終更新："+d.updated;render();
+}).catch(()=>{list.innerHTML='<p class="empty">動画の情報を読み込めませんでした。時間をおいて、もう一度開いてください。</p>'});
+</script>
+</body>
+</html>

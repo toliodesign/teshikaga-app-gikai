@@ -6,16 +6,21 @@ from datetime import datetime, timezone, timedelta
 
 CHANNEL_ID = "UCp1bEH7DOpEjf_hjgCmZFlQ"
 OUT = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "videos.json")
-TIME_LINE = re.compile(r"^((?:\d+:)?\d+:\d{2})\s+(.+)$")
+DIGITS = str.maketrans("０１２３４５６７８９：", "0123456789:")
+_T = r"(?:[0-9０-９]+[:：])?[0-9０-９]+[:：][0-9０-９]{2}"          # 4:45 / 1:02:03 / 全角も可
+TIME_LINE = re.compile(r"^[\[【(（\s]*(" + _T + r")[\]】)）\s]*[-–—〜~:：]?\s*(.*)$")   # 行の先頭が時刻
+TIME_ANY = re.compile(r"(?<![0-9０-９:：])" + _T + r"(?![0-9０-９])")          # 文中のどこかにある時刻
 JST = timezone(timedelta(hours=9))
 
-def parse_description(desc):
-    """説明欄の「********」より上だけを読む（下は全動画共通の注意書き）。
-    戻り値: (質問事項, 質問要旨, [[時刻, 内容], ...])"""
-    body = desc.split("********")[0]
-    items, qbuf, gbuf, mode, last = [], [], [], None, None
+def _parse(desc):
+    body = desc.split("********")[0]   # 「********」より下は全動画共通の注意書きなので使わない
+    items, qbuf, gbuf, mode, last, n = [], [], [], None, None, 0
     for raw in body.splitlines():
         l = raw.strip()
+        m = TIME_LINE.match(l)
+        if m:   # 時刻で始まる行は、どの場所にあっても必ずリンク元にする
+            last = m.group(1).translate(DIGITS); n += 1; mode = None
+            items.append([last, m.group(2).strip()]); continue
         if l.startswith("【質問事項】"): mode = "q"; continue
         if l.startswith("【質問要旨】"): mode = "g"; continue
         if mode == "q":
@@ -24,15 +29,23 @@ def parse_description(desc):
         if mode == "g":
             if l: gbuf.append(l)
             continue
-        m = TIME_LINE.match(l)
-        if m:
-            last = m.group(1); items.append([last, m.group(2)]); continue
         if not l: last = None; continue
         if last and not l.startswith(("※", "http")):
-            items.append([last, l])   # 同じ時刻にまとまっている続きの行
-    if qbuf:  # 一般質問の動画は、時刻の目次を使わない
-        return " ".join(qbuf), "\n".join(gbuf), []
-    return "", "", items
+            if items and items[-1][0] == last and items[-1][1] == "":
+                items[-1][1] = l      # 時刻だけの行の、次の行を件名にする
+            else:
+                items.append([last, l])   # 同じ時刻にまとまっている続きの行
+    return " ".join(qbuf), "\n".join(gbuf), items, n
+
+def parse_description(desc):
+    """戻り値: (質問事項, 質問要旨, [[時刻, 内容], ...])。一般質問でも時刻は残す。"""
+    q, g, items, _ = _parse(desc)
+    return q, g, items
+
+def time_check(desc):
+    """(説明欄にある時刻らしい文字の数, リンクにできた時刻の数)。差があれば見落としの疑い。"""
+    body = desc.split("********")[0]
+    return len(TIME_ANY.findall(body)), _parse(desc)[3]
 
 def api(path, **params):
     params["key"] = os.environ["YOUTUBE_API_KEY"]
@@ -56,7 +69,11 @@ def fetch_videos():
         d = api("videos", part="snippet", id=",".join(ids[i:i + 50]))
         for it in d.get("items", []):
             sn = it["snippet"]
-            q, gist, items = parse_description(sn.get("description", ""))
+            desc = sn.get("description", "")
+            q, gist, items = parse_description(desc)
+            found, linked = time_check(desc)
+            if found != linked:   # GitHubの実行記録に黄色い注意として出る
+                print("::warning::時刻の見落としの疑い：%s（時刻らしい文字 %d 個、リンクにできたのは %d 個）" % (sn["title"], found, linked))
             pub = datetime.fromisoformat(sn["publishedAt"].replace("Z", "+00:00")).astimezone(JST)
             v = {"id": it["id"], "title": sn["title"], "pub": pub.strftime("%Y-%m-%d")}
             if q: v["q"], v["gist"] = q, gist

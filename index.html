@@ -43,6 +43,9 @@ ul.items li{padding:.2rem 0;border-top:1px solid var(--line)}
 a{color:var(--pri);font-weight:700}
 mark{background:var(--mark);color:inherit}
 .gist{white-space:pre-line}
+.qb{border-top:1px solid var(--line);margin-top:.7rem;padding-top:.4rem}
+.qh{margin:.3rem 0;font-weight:700}
+.qq{margin:.2rem 0}
 .empty{border:2px dashed var(--line);padding:1rem;border-radius:.4rem}
 h3.sub{font-size:1.05rem;margin:1.1rem 0 .1rem;color:var(--sub)}
 footer{margin:2rem 0 1rem;color:var(--sub);font-size:.85rem}
@@ -80,6 +83,9 @@ const W=v=>"https://www.youtube.com/watch?v="+v.id;
 const sec=t=>t.split(":").reduce((a,x)=>a*60+ +x,0);
 const TRE=/(\d+:\d{2}(?::\d{2})?)(?!\d)/;
 const itemText=(v,t,k)=>t?t.split(TRE).map((p,i)=>i%2?tl(v,p):hl(p,k)).join(""):"この場面から再生";
+const qBlock=(v,b,k)=>'<div class="qb"><p class="qh">'+(b.time?tl(v,b.time)+' ':'')+hl(b.label||"",k)+'</p>'
+ +(b.q?'<p class="qq"><b>【質問事項】</b>'+hl(b.q,k)+'</p>':'')
+ +(b.gist?'<details'+(k&&b.gist.toLowerCase().includes(k.toLowerCase())?' open':'')+'><summary>【質問要旨】</summary><p class="gist">'+hl(b.gist,k)+'</p></details>':'')+'</div>';
 const tl=(v,t)=>v.id&&!isNaN(sec(t))?'<a class="t" href="'+W(v)+'&t='+sec(t)+'s" target="_blank" rel="noopener">'+t+'</a>':'<span class="t">'+t+'</span>';
 let V=[];
 function prep(){;
@@ -96,7 +102,8 @@ V.forEach((v,i)=>{
  v.date=(t.match(/（(\d+\/\d+[^）]*)）/)||[])[1]||"";
  v.member=(t.match(/一般質問（(.+?)議員）/)||[])[1]||"";
  v.kind=v.member?"一般質問":/予算特別委員会/.test(t)?"予算特別委員会":/議案/.test(t)?"議案の審議":"その他";
- v.text=[t,v.q||"",v.gist||"",...(v.items||[]).map(x=>x[1])].join(" ");
+ if(v.q&&!v.qs)v.qs=[{time:"",label:"",q:v.q,gist:v.gist||""}];   // 古い形のデータも読める
+ v.text=[t,...(v.qs||[]).map(b=>b.label+" "+b.q+" "+b.gist),...(v.items||[]).map(x=>x[1])].join(" ");
 });}
 const list=document.getElementById("list"),count=document.getElementById("count"),q=document.getElementById("q");
 let view="session",asc=false;
@@ -104,9 +111,8 @@ const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&qu
 function hl(s,k){s=esc(s);if(!k)return s;const e=esc(k).replace(/[.*+?^${}()|[\]\\]/g,"\\$&");return s.replace(new RegExp("("+e+")","gi"),"<mark>$1</mark>")}
 function card(v,k){
  let h='<article class="card"><h3>'+hl(v.title,k)+'</h3><p class="meta"><span class="tag">'+v.kind+'</span>'+'会議日 '+esc(v.date||"不明")+'　公開日 '+v.pub.replace(/-/g,"/")+'</p>';
- if(v.q&&v.items&&v.items.length) h+='<ul class="items">'+v.items.map(x=>'<li>'+tl(v,x[0])+itemText(v,x[1],k)+'</li>').join("")+'</ul>';
- if(v.q) h+='<p><b>質問事項：</b>'+hl(v.q,k)+'</p><details><summary>質問の要旨を読む</summary><p class="gist">'+hl(v.gist,k)+'</p></details>';
- if(v.items) h+='<details'+(k?' open':'')+'><summary>この動画の内容（'+v.items.length+'件）</summary><ul class="items">'+v.items.map(x=>'<li>'+tl(v,x[0])+itemText(v,x[1],k)+'</li>').join("")+'</ul></details>';
+ if(v.qs) h+=v.qs.map(b=>qBlock(v,b,k)).join("");
+ if(v.items&&!v.qs) h+='<details'+(k?' open':'')+'><summary>この動画の内容（'+v.items.length+'件）</summary><ul class="items">'+v.items.map(x=>'<li>'+tl(v,x[0])+itemText(v,x[1],k)+'</li>').join("")+'</ul></details>';
  return h+'<p><a href="'+(v.id?W(v):CH)+'" target="_blank" rel="noopener">YouTubeで動画を見る</a></p></article>';
 }
 const fyName=v=>v.fy?"令和"+v.fy+"年":"年不明";

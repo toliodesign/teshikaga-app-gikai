@@ -45,6 +45,32 @@ def parse_description(desc):
     q, g, items, _ = _parse(desc)
     return q, g, items
 
+def parse_questions(desc):
+    """一般質問の説明欄を、質問ごとのまとまり [{time, label, q, gist}, ...] にする。
+    時刻の行で新しいまとまりが始まり、【質問事項】【質問要旨】はそのまとまりに入る。"""
+    body = desc.split("********")[0]
+    blocks, cur, mode = [], None, None
+    def new(time="", label=""):
+        b = {"time": time, "label": label, "q": [], "gist": []}
+        blocks.append(b); return b
+    for raw in body.splitlines():
+        l = raw.strip()
+        m = TIME_LINE.match(l)
+        if m:
+            cur = new(m.group(1).translate(DIGITS), m.group(2).strip()); mode = None; continue
+        for tag, key in (("【質問事項】", "q"), ("【質問要旨】", "g")):
+            if l.startswith(tag):
+                if cur is None or (key == "q" and cur["q"]): cur = new()   # 時刻のない質問も取りこぼさない
+                mode, rest = key, l[len(tag):].strip()
+                if rest: cur["q" if key == "q" else "gist"].append(rest)
+                break
+        else:
+            if cur and l and mode == "q": cur["q"].append(l)
+            elif cur and l and mode == "g": cur["gist"].append(l)
+    for b in blocks:
+        b["q"], b["gist"] = " ".join(b["q"]), "\n".join(b["gist"])
+    return blocks
+
 def time_check(desc):
     """(説明欄にある時刻らしい文字の数, リンクにできた時刻の数)。差があれば見落としの疑い。"""
     body = desc.split("********")[0]
@@ -79,8 +105,9 @@ def fetch_videos():
                 print("::warning::時刻の見落としの疑い：%s（時刻らしい文字 %d 個、リンクにできたのは %d 個）" % (sn["title"], found, linked))
             pub = datetime.fromisoformat(sn["publishedAt"].replace("Z", "+00:00")).astimezone(JST)
             v = {"id": it["id"], "title": sn["title"], "pub": pub.strftime("%Y-%m-%d")}
-            if q: v["q"], v["gist"] = q, gist
-            if items: v["items"] = items
+            qs = parse_questions(desc)
+            if any(b["q"] or b["gist"] for b in qs): v["qs"] = qs   # 一般質問：質問ごとのまとまり
+            elif items: v["items"] = items
             out.append(v)
     out.sort(key=lambda v: (v["pub"], v["title"]), reverse=True)
     return out

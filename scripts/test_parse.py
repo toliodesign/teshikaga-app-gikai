@@ -2,7 +2,7 @@
 """説明欄の読み取りの検査。失敗したら自動更新を止める（おかしなデータを公開しないため）。"""
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from update import parse_description as P, time_check as C
+from update import parse_description as P, time_check as C, parse_questions as Q
 
 D = "\n********************\n公式チャンネルです。0:00 これは無視される"
 def times(d): return [x[0] for x in P(d)[2]]
@@ -30,4 +30,17 @@ assert P(real)[2] == [["1:54", "令和7年度弟子屈町一般会計補正予�
                       ["1:42:58", "令和7年度弟子屈町介護保険特別会計補正予算について"]]
 assert C(real) == (3, 3)
 assert P("1:54 A（４５：５７　質疑）" + D)[2] == [["1:54", "A（45:57　質疑）"]]   # 全角の途中の時刻
+# I 質問が2つ入った一般質問（質問番号7・8）：質問ごとに分かれ、混ざらないこと
+two = ("0:20 質問番号7\n【質問事項】\n弟子屈高校の今後へ向けた方向性について\n\n【質問要旨】\n2028年度の公立高校配置計画において、\n①今現在の高校への支援の進捗\n②今後の動き\n上記2点について伺う。\n\n"
+       "22:24 質問番号8\n【質問事項】\n中心市街地複合施設における計画の継続について\n\n【質問要旨】\n6月議会の総括質疑時に\n理事者の考えを伺う。" + D)
+b = Q(two)
+assert [x["time"] for x in b] == ["0:20", "22:24"] and [x["label"] for x in b] == ["質問番号7", "質問番号8"]
+assert b[0]["q"] == "弟子屈高校の今後へ向けた方向性について" and b[1]["q"] == "中心市街地複合施設における計画の継続について"
+assert b[0]["gist"].startswith("2028年度") and b[0]["gist"].endswith("伺う。") and "中心市街地" not in b[0]["gist"]
+assert b[1]["gist"] == "6月議会の総括質疑時に\n理事者の考えを伺う。" and C(two) == (2, 2)
+# J 質問が1つ／時刻のない質問／議案の動画（質問なし）
+assert len(Q("0:25 質問番号5\n【質問事項】\nヒグマ\n【質問要旨】\n要旨" + D)) == 1
+nt = Q("【質問事項】\nA\n【質問要旨】\nB\n【質問事項】\nC" + D)
+assert [(x["time"], x["q"]) for x in nt] == [("", "A"), ("", "C")]
+assert all(not (x["q"] or x["gist"]) for x in Q("4:45 行政報告\n15:28 議案" + D))
 print("読み取りの検査：すべて合格")

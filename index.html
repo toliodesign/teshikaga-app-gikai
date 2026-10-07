@@ -78,6 +78,8 @@ footer{margin:2rem 0 1rem;color:var(--sub);font-size:.85rem}
 const CH="https://www.youtube.com/channel/UCp1bEH7DOpEjf_hjgCmZFlQ";
 const W=v=>"https://www.youtube.com/watch?v="+v.id;
 const sec=t=>t.split(":").reduce((a,x)=>a*60+ +x,0);
+const TRE=/(\d+:\d{2}(?::\d{2})?)(?!\d)/;
+const itemText=(v,t,k)=>t?t.split(TRE).map((p,i)=>i%2?tl(v,p):hl(p,k)).join(""):"この場面から再生";
 const tl=(v,t)=>v.id&&!isNaN(sec(t))?'<a class="t" href="'+W(v)+'&t='+sec(t)+'s" target="_blank" rel="noopener">'+t+'</a>':'<span class="t">'+t+'</span>';
 let V=[];
 function prep(){;
@@ -102,9 +104,9 @@ const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&qu
 function hl(s,k){s=esc(s);if(!k)return s;const e=esc(k).replace(/[.*+?^${}()|[\]\\]/g,"\\$&");return s.replace(new RegExp("("+e+")","gi"),"<mark>$1</mark>")}
 function card(v,k){
  let h='<article class="card"><h3>'+hl(v.title,k)+'</h3><p class="meta"><span class="tag">'+v.kind+'</span>'+'会議日 '+esc(v.date||"不明")+'　公開日 '+v.pub.replace(/-/g,"/")+'</p>';
- if(v.q&&v.items&&v.items.length) h+='<ul class="items">'+v.items.map(x=>'<li>'+tl(v,x[0])+hl(x[1]||"この場面から再生",k)+'</li>').join("")+'</ul>';
+ if(v.q&&v.items&&v.items.length) h+='<ul class="items">'+v.items.map(x=>'<li>'+tl(v,x[0])+itemText(v,x[1],k)+'</li>').join("")+'</ul>';
  if(v.q) h+='<p><b>質問事項：</b>'+hl(v.q,k)+'</p><details><summary>質問の要旨を読む</summary><p class="gist">'+hl(v.gist,k)+'</p></details>';
- if(v.items) h+='<details'+(k?' open':'')+'><summary>この動画の内容（'+v.items.length+'件）</summary><ul class="items">'+v.items.map(x=>'<li>'+tl(v,x[0])+hl(x[1]||"この場面から再生",k)+'</li>').join("")+'</ul></details>';
+ if(v.items) h+='<details'+(k?' open':'')+'><summary>この動画の内容（'+v.items.length+'件）</summary><ul class="items">'+v.items.map(x=>'<li>'+tl(v,x[0])+itemText(v,x[1],k)+'</li>').join("")+'</ul></details>';
  return h+'<p><a href="'+(v.id?W(v):CH)+'" target="_blank" rel="noopener">YouTubeで動画を見る</a></p></article>';
 }
 const fyName=v=>v.fy?"令和"+v.fy+"年":"年不明";

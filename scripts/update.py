@@ -35,6 +35,9 @@ def _parse(desc):
                 items[-1][1] = l      # 時刻だけの行の、次の行を件名にする
             else:
                 items.append([last, l])   # 同じ時刻にまとまっている続きの行
+    for it in items:   # 行の途中にある時刻も、画面でリンクにするので数字を半角にそろえる
+        it[1] = TIME_ANY.sub(lambda m: m.group(0).translate(DIGITS), it[1])
+    n += sum(len(TIME_ANY.findall(it[1])) for it in items)   # 行の途中の時刻もリンクにできた数に入れる
     return " ".join(qbuf), "\n".join(gbuf), items, n
 
 def parse_description(desc):

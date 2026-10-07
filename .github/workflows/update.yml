@@ -13,6 +13,8 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+      - name: 読み取りの検査
+        run: python scripts/test_parse.py
       - name: YouTubeから動画情報を集める
         run: python scripts/update.py
         env:

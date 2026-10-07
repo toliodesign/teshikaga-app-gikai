@@ -84,7 +84,7 @@ function prep(){;
 // タイトルを読み取る（読めない部分は空のまま＝推測しない）
 V.forEach((v,i)=>{
  const t=v.title;
- v.id=i;
+ v._i=i;
  v.session=(t.match(/^(令和\d+年第\d+回(?:定例会|臨時会))/)||[])[1]||"未分類";
  const ry=+((t.match(/^令和(\d+)年/)||[])[1]||0),mo=+((t.match(/（(\d+)\//)||[])[1]||0);
  v.fy=ry;

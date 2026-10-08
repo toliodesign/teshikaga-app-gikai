@@ -6,9 +6,9 @@
 <title>弟子屈町議会 動画目次（非公式）</title>
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#f6f8fb;--card:#fff;--ink:#1b2430;--sub:#4a5565;--line:#b8c2d0;--pri:#17358a;--priink:#fff;--mark:#fff3b0;--fs:18px;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10151d;--card:#18202b;--ink:#f1f4f8;--sub:#b9c3d1;--line:#52607a;--pri:#9db8ff;--priink:#0d1a3d;--mark:#5b4b00}}
-:root[data-theme="dark"]{--bg:#10151d;--card:#18202b;--ink:#f1f4f8;--sub:#b9c3d1;--line:#52607a;--pri:#9db8ff;--priink:#0d1a3d;--mark:#5b4b00}
+:root{--bg:#f6f8fb;--card:#fff;--ink:#1b2430;--sub:#4a5565;--line:#b8c2d0;--pri:#17358a;--priink:#fff;--mark:#fff3b0;--ts:#9b1c1c;--fs:18px;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10151d;--card:#18202b;--ink:#f1f4f8;--sub:#b9c3d1;--line:#52607a;--pri:#9db8ff;--priink:#0d1a3d;--mark:#5b4b00;--ts:#ff9a9a}}
+:root[data-theme="dark"]{--bg:#10151d;--card:#18202b;--ink:#f1f4f8;--sub:#b9c3d1;--line:#52607a;--pri:#9db8ff;--priink:#0d1a3d;--mark:#5b4b00;--ts:#ff9a9a}
 *,*::before,*::after{box-sizing:inherit}
 html{font-size:var(--fs)}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",Meiryo,sans-serif;line-height:1.8}
@@ -24,6 +24,12 @@ button[aria-pressed="true"]{background:var(--pri);color:var(--priink)}
 button.ui{min-height:2.5rem;padding:.2rem .8rem;border:1px solid var(--line);background:transparent;color:var(--sub);font-weight:400;font-size:.85rem;display:inline-flex;align-items:center;gap:.4rem}
 button.ui[aria-pressed="true"]{background:var(--line);color:var(--ink)}
 .ico{width:1.1em;height:1.1em;transition:transform .25s}
+button.ui:disabled{opacity:.45;cursor:not-allowed}
+.fsg{display:inline-flex;align-items:center;gap:.5rem;color:var(--sub);font-size:.85rem}
+.rnd{width:44px;height:44px;min-height:0;padding:0;border-radius:50%;border:1px solid var(--line);background:transparent;color:var(--sub);font-weight:700;cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.rnd[aria-pressed="true"]{background:var(--line);color:var(--ink);border-color:var(--sub)}
+.rnd:disabled{opacity:.45;cursor:not-allowed}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 button.flip .ico{transform:scaleY(-1)}
 @media (prefers-reduced-motion:reduce){.ico{transition:none}}
 .row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:.5rem;margin:.6rem 0}
@@ -39,10 +45,14 @@ details{margin-top:.5rem}
 summary{cursor:pointer;font-weight:700;padding:.3rem 0;min-height:2.5rem}
 ul.items{margin:.3rem 0;padding-left:0;list-style:none}
 ul.items li{padding:.2rem 0;border-top:1px solid var(--line)}
-.t{font-variant-numeric:tabular-nums;font-weight:700;margin-right:.6rem}
+.t{font-variant-numeric:tabular-nums;font-weight:700;margin-right:.6rem;color:var(--ts)}
 a{color:var(--pri);font-weight:700}
 mark{background:var(--mark);color:inherit}
 .gist{white-space:pre-line}
+.mem{display:inline-flex;align-items:center;gap:.7rem;margin:.4rem 0;color:var(--ink);font-weight:700;text-decoration:none}
+.mem img{width:3.5rem;height:4.5rem;object-fit:cover;object-position:top;border-radius:.3rem;border:1px solid var(--line);background:var(--card)}
+.mem small{display:block;font-weight:400;font-size:.8rem;color:var(--sub);text-decoration:underline}
+.mem:hover small{color:var(--pri)}
 .qb{border-top:1px solid var(--line);margin-top:.7rem;padding-top:.4rem}
 .qh{margin:.3rem 0;font-weight:700}
 .qq{margin:.2rem 0}
@@ -64,7 +74,11 @@ footer{margin:2rem 0 1rem;color:var(--sub);font-size:.85rem}
 <button type="button" data-view="all" aria-pressed="false">すべて</button>
 </div>
 <div class="tools" role="group" aria-label="見やすさの設定">
-<button type="button" class="ui" id="big" aria-pressed="false">文字を大きくする</button>
+<span class="fsg" role="group" aria-label="文字サイズ"><span aria-hidden="true">文字サイズ：</span>
+<button type="button" class="rnd" id="fss" style="font-size:13px" aria-pressed="false" aria-label="小。文字を小さくする">小</button>
+<button type="button" class="rnd" id="fsn" style="font-size:16px" aria-pressed="true" aria-label="中。文字サイズを標準に戻す">中</button>
+<button type="button" class="rnd" id="fsb" style="font-size:21px" aria-pressed="false" aria-label="大。文字を大きくする">大</button>
+<span class="sr" id="fsl" aria-live="polite"></span></span>
 <button type="button" class="ui" id="dark" aria-pressed="false">暗い画面にする</button>
 </div>
 
@@ -83,6 +97,10 @@ const W=v=>"https://www.youtube.com/watch?v="+v.id;
 const sec=t=>t.split(":").reduce((a,x)=>a*60+ +x,0);
 const TRE=/(\d+:\d{2}(?::\d{2})?)(?!\d)/;
 const itemText=(v,t,k)=>t?t.split(TRE).map((p,i)=>i%2?tl(v,p):hl(p,k)).join(""):"この場面から再生";
+const memChip=n=>{const m=MEM[n];if(!m||typeof m!=="object"||!m.page)return"";const f=esc(m.full||n)+"議員";
+ return '<a class="mem" href="'+esc(m.page)+'" target="_blank" rel="noopener" aria-label="'+f+'。弟子屈町公式サイトの議員名簿を新しいタブで開く">'
+  +(m.photo?'<img src="'+esc(m.photo)+'" alt="" width="56" height="72" loading="lazy" onerror="this.remove()">':'')
+  +'<span>'+f+'<small>議員名簿（町公式サイト）</small></span></a>';};
 const qBlock=(v,b,k)=>'<div class="qb"><p class="qh">'+(b.time?tl(v,b.time)+' ':'')+hl(b.label||"",k)+'</p>'
  +(b.q?'<p class="qq"><b>【質問事項】</b>'+hl(b.q,k)+'</p>':'')
  +(b.gist?'<details'+(k&&b.gist.toLowerCase().includes(k.toLowerCase())?' open':'')+'><summary>【質問要旨】</summary><p class="gist">'+hl(b.gist,k)+'</p></details>':'')+'</div>';
@@ -111,12 +129,13 @@ const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&qu
 function hl(s,k){s=esc(s);if(!k)return s;const e=esc(k).replace(/[.*+?^${}()|[\]\\]/g,"\\$&");return s.replace(new RegExp("("+e+")","gi"),"<mark>$1</mark>")}
 function card(v,k){
  let h='<article class="card"><h3>'+hl(v.title,k)+'</h3><p class="meta"><span class="tag">'+v.kind+'</span>'+'会議日 '+esc(v.date||"不明")+'　公開日 '+v.pub.replace(/-/g,"/")+'</p>';
+ if(v.member&&view!=="member") h+=memChip(v.member);
  if(v.qs) h+=v.qs.map(b=>qBlock(v,b,k)).join("");
  if(v.items&&!v.qs) h+='<details'+(k?' open':'')+'><summary>この動画の内容（'+v.items.length+'件）</summary><ul class="items">'+v.items.map(x=>'<li>'+tl(v,x[0])+itemText(v,x[1],k)+'</li>').join("")+'</ul></details>';
  return h+'<p><a href="'+(v.id?W(v):CH)+'" target="_blank" rel="noopener">YouTubeで動画を見る</a></p></article>';
 }
 const fyName=v=>v.fy?"令和"+v.fy+"年":"年不明";
-let YOMI={};
+let YOMI={},MEM={};
 const cmpY=(a,b)=>(YOMI[a]||a).localeCompare(YOMI[b]||b,"ja");
 const NUM=(a,b)=>b.localeCompare(a,"ja",{numeric:true});
 function group(arr,keyf,order){
@@ -131,7 +150,7 @@ function render(){
  if(view==="member"){
   arr=arr.filter(v=>v.member);
   group(arr,v=>v.member,(a,b)=>asc?cmpY(b,a):cmpY(a,b)).forEach(g=>{
-   h+='<h2>'+esc(g)+'議員</h2>'+arr.filter(v=>v.member===g).map(v=>card(v,k)).join("")});
+   h+='<h2>'+esc(g)+'議員</h2>'+memChip(g)+arr.filter(v=>v.member===g).map(v=>card(v,k)).join("")});
   h+='<p class="meta">「議員別」には、タイトルに議員名がある動画（一般質問）だけが出ます。</p>';
  }else if(view==="year"){
   group(arr,fyName).forEach(g=>{
@@ -157,17 +176,24 @@ document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>{
  render();
 });
 q.addEventListener("input",render);
-document.getElementById("big").onclick=e=>{
- const on=e.target.getAttribute("aria-pressed")!=="true";
- e.target.setAttribute("aria-pressed",on);
- document.documentElement.style.setProperty("--fs",on?"22px":"18px");
-};
+const SZ=[14,16,18,21,24];let fi=2;   // 左から 小（2段階目）・小（1段階目）・標準（中）・大（1段階目）・大（2段階目）
+const fss=document.getElementById("fss"),fsn=document.getElementById("fsn"),fsb=document.getElementById("fsb"),fsl=document.getElementById("fsl");
+function setFs(){
+ document.documentElement.style.setProperty("--fs",SZ[fi]+"px");
+ fss.disabled=fi===0;fsb.disabled=fi===SZ.length-1;
+ fss.setAttribute("aria-pressed",fi<2);fsn.setAttribute("aria-pressed",fi===2);fsb.setAttribute("aria-pressed",fi>2);
+ fsl.textContent="文字サイズ："+(fi===2?"標準（中）":(fi<2?"小":"大")+"（"+Math.abs(fi-2)+"段階目）");
+}
+fss.onclick=()=>{if(fi>0){fi--;setFs();}};
+fsb.onclick=()=>{if(fi<SZ.length-1){fi++;setFs();}};
+fsn.onclick=()=>{fi=2;setFs();};
+setFs();
 document.getElementById("dark").onclick=e=>{
  const on=e.target.getAttribute("aria-pressed")!=="true";
  e.target.setAttribute("aria-pressed",on);
  document.documentElement.dataset.theme=on?"dark":"light";
 };
-fetch("data/members.json",{cache:"no-cache"}).then(r=>r.ok?r.json():{}).catch(()=>({})).then(m=>{YOMI=m;return fetch("data/videos.json",{cache:"no-cache"})}).then(r=>{if(!r.ok)throw 0;return r.json()}).then(d=>{
+fetch("data/members.json",{cache:"no-cache"}).then(r=>r.ok?r.json():{}).catch(()=>({})).then(m=>{MEM=m;YOMI={};for(const k in m)YOMI[k]=typeof m[k]==="string"?m[k]:(m[k].yomi||"");return fetch("data/videos.json",{cache:"no-cache"})}).then(r=>{if(!r.ok)throw 0;return r.json()}).then(d=>{
  V=d.videos;prep();document.getElementById("upd").textContent="最終更新："+d.updated;render();
 }).catch(()=>{list.innerHTML='<p class="empty">動画の情報を読み込めませんでした。時間をおいて、もう一度開いてください。</p>'});
 </script>

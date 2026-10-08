@@ -2,7 +2,7 @@
 """説明欄の読み取りの検査。失敗したら自動更新を止める（おかしなデータを公開しないため）。"""
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from update import parse_description as P, time_check as C, parse_questions as Q, classify as K
+from update import parse_description as P, time_check as C, parse_questions as Q, classify as K, _cmd, VID_RE
 
 D = "\n********************\n公式チャンネルです。0:00 これは無視される"
 def times(d): return [x[0] for x in P(d)[2]]
@@ -51,4 +51,6 @@ assert K("令和7年第4回定例会2日目（12/3水）⑧　予算特別委員
 new = [{"name": "決算特別委員会", "title": ["決算特別委員"]}] + [{"name": "一般質問", "title": ["一般質問"]}]   # 新しい種類は、1行足すだけ
 assert K("令和7年第3回定例会3日目（9/10水）② 決算特別委員会（総括質疑）", new) == "決算特別委員会"
 assert K("令和7年第3回定例会3日目 ③ 一般質問（板垣議員）", new) == "一般質問" and K("何かの動画", new) == "その他"
+# L 実行記録の安全化と、動画IDの形
+assert _cmd("a%b\nc\r") == "a%25b%0Ac%0D" and VID_RE.match("2o8cvswguvc") and not VID_RE.match('x" onmouseover="')
 print("読み取りの検査：すべて合格")

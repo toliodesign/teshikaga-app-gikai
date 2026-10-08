@@ -2,7 +2,7 @@
 """説明欄の読み取りの検査。失敗したら自動更新を止める（おかしなデータを公開しないため）。"""
 import os, sys
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
-from update import parse_description as P, time_check as C, parse_questions as Q
+from update import parse_description as P, time_check as C, parse_questions as Q, classify as K
 
 D = "\n********************\n公式チャンネルです。0:00 これは無視される"
 def times(d): return [x[0] for x in P(d)[2]]
@@ -43,4 +43,12 @@ assert len(Q("0:25 質問番号5\n【質問事項】\nヒグマ\n【質問要旨
 nt = Q("【質問事項】\nA\n【質問要旨】\nB\n【質問事項】\nC" + D)
 assert [(x["time"], x["q"]) for x in nt] == [("", "A"), ("", "C")]
 assert all(not (x["q"] or x["gist"]) for x in Q("4:45 行政報告\n15:28 議案" + D))
+# K 動画の種類（上から順に最初に合った種類。どれにも合わなければ「その他」）
+assert K("令和8年第2回定例会1日目（6/2火）⑤　一般質問（萩原議員）") == "一般質問"
+assert K("令和7年第4回定例会2日目（12/3水）⑦　令和7年度会計補正予算・予算特別委員会") == "予算特別委員会"
+assert K("令和7年第3回定例会1日目（9/8月）①　開会～議案第72号（財産の取得について）") == "議案の審議"
+assert K("令和7年第4回定例会2日目（12/3水）⑧　予算特別委員長報告～閉会") == "その他"
+new = [{"name": "決算特別委員会", "title": ["決算特別委員"]}] + [{"name": "一般質問", "title": ["一般質問"]}]   # 新しい種類は、1行足すだけ
+assert K("令和7年第3回定例会3日目（9/10水）② 決算特別委員会（総括質疑）", new) == "決算特別委員会"
+assert K("令和7年第3回定例会3日目 ③ 一般質問（板垣議員）", new) == "一般質問" and K("何かの動画", new) == "その他"
 print("読み取りの検査：すべて合格")

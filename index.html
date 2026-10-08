@@ -55,6 +55,8 @@ mark{background:var(--mark);color:inherit}
 .mem img{width:3.5rem;height:4.5rem;object-fit:cover;object-position:top;border-radius:.3rem;border:1px solid var(--line);background:var(--card)}
 .mem small{display:block;font-weight:400;font-size:.8rem;color:var(--sub);text-decoration:underline}
 .mem:hover small{color:var(--pri)}
+.kb{min-height:2.5rem;padding:.2rem .8rem;border:1px solid var(--pri);border-radius:.3rem;background:transparent;color:var(--pri);font-weight:700;font-size:.95rem}
+.kb[aria-pressed="true"]{background:var(--pri);color:var(--priink)}
 .qb{border-top:1px solid var(--line);margin-top:.7rem;padding-top:.4rem}
 .qh{margin:.3rem 0;font-weight:700}
 .qq{margin:.2rem 0}
@@ -75,6 +77,7 @@ footer{margin:2rem 0 1rem;color:var(--sub);font-size:.85rem}
 <button type="button" data-view="member" aria-pressed="false">議員別</button>
 <button type="button" data-view="all" aria-pressed="false">すべて</button>
 </div>
+<div class="tools" id="kinds" role="group" aria-label="動画の種類で絞る"></div>
 <div class="tools" role="group" aria-label="見やすさの設定">
 <span class="fsg" role="group" aria-label="文字サイズ"><span aria-hidden="true">文字サイズ：</span>
 <button type="button" class="rnd" id="fss" style="font-size:13px" aria-pressed="false" aria-label="小。文字を小さくする">小</button>
@@ -121,12 +124,13 @@ V.forEach((v,i)=>{
  v.day=(t.match(/(\d+日目)/)||[])[1]||"";
  v.date=(t.match(/（(\d+\/\d+[^）]*)）/)||[])[1]||"";
  v.member=(t.match(/一般質問（(.+?)議員）/)||[])[1]||"";
- v.kind=v.member?"一般質問":/予算特別委員会/.test(t)?"予算特別委員会":/議案/.test(t)?"議案の審議":"その他";
+ v.kind=kindOf(t);
  if(v.q&&!v.qs)v.qs=[{time:"",label:"",q:v.q,gist:v.gist||""}];   // 古い形のデータも読める
  v.text=[t,...(v.qs||[]).map(b=>b.label+" "+b.q+" "+b.gist),...(v.items||[]).map(x=>x[1])].join(" ");
 });}
 const list=document.getElementById("list"),count=document.getElementById("count"),q=document.getElementById("q");
-let view="session",asc=false;
+const kindsEl=document.getElementById("kinds");
+let view="session",asc=false,kind="";
 const esc=s=>s.replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
 function hl(s,k){s=esc(s);if(!k)return s;const e=esc(k).replace(/[.*+?^${}()|[\]\\]/g,"\\$&");return s.replace(new RegExp("("+e+")","gi"),"<mark>$1</mark>")}
 function card(v,k){
@@ -138,6 +142,9 @@ function card(v,k){
 }
 const fyName=v=>v.fy?"令和"+v.fy+"年":"年不明";
 let YOMI={},MEM={};
+// 動画の種類を決めるきまり。data/kinds.json があればそちらを使う（上から順に、タイトルに言葉が入っていた最初の種類になる）
+let KR=[{name:"一般質問",title:["一般質問"]},{name:"予算特別委員会",title:["予算特別委員会"]},{name:"議案の審議",title:["議案"]}];
+const kindOf=t=>{for(const r of KR)if((r.title||[]).some(w=>t.includes(w)))return r.name;return "その他"};
 const cmpY=(a,b)=>(YOMI[a]||a).localeCompare(YOMI[b]||b,"ja");
 const NUM=(a,b)=>b.localeCompare(a,"ja",{numeric:true});
 function group(arr,keyf,order){
@@ -146,7 +153,13 @@ function group(arr,keyf,order){
 }
 function render(){
  const k=q.value.trim();
- let arr=V.filter(v=>!k||v.text.toLowerCase().includes(k.toLowerCase()));
+ const base=V.filter(v=>!k||v.text.toLowerCase().includes(k.toLowerCase()));
+ const cnt={};base.forEach(v=>{cnt[v.kind]=(cnt[v.kind]||0)+1});
+ const have=new Set(V.map(v=>v.kind)),names=[];                       // 種類のボタンは、データにある種類から自動で作る
+ KR.forEach(r=>{if(have.has(r.name)&&!names.includes(r.name))names.push(r.name)});
+ if(have.has("その他"))names.push("その他");
+ kindsEl.innerHTML='<span class="meta" aria-hidden="true">種類：</span>'+[""].concat(names).map(n=>'<button type="button" class="kb" data-kind="'+esc(n)+'" aria-pressed="'+(kind===n)+'">'+esc(n||"全種類")+'（'+(n?(cnt[n]||0):base.length)+'）</button>').join("");
+ let arr=kind?base.filter(v=>v.kind===kind):base;
  arr.sort((a,b)=>asc?a.sk-b.sk:b.sk-a.sk);
  let h="";
  if(view==="member"){
@@ -170,6 +183,8 @@ function render(){
  sortBtn.setAttribute("aria-label","並べ替え。いまは"+ord+"。押すと逆になります");
  count.textContent=arr.length+"本の動画が見つかりました（"+ord+"）";
 }
+kindsEl.onclick=e=>{const b=e.target.closest("button[data-kind]");if(!b)return;const n=b.dataset.kind;kind=(n===kind)?"":n;render();
+ const nb=[...kindsEl.querySelectorAll("button")].find(x=>x.dataset.kind===n);if(nb)nb.focus();};   // 押したあとも、同じボタンに操作が残るようにする
 const sortBtn=document.getElementById("sort");
 sortBtn.onclick=()=>{asc=!asc;render();};
 document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>{
@@ -195,7 +210,7 @@ document.getElementById("dark").onclick=e=>{
  e.target.setAttribute("aria-pressed",on);
  document.documentElement.dataset.theme=on?"dark":"light";
 };
-fetch("data/members.json",{cache:"no-cache"}).then(r=>r.ok?r.json():{}).catch(()=>({})).then(m=>{MEM=m;YOMI={};for(const k in m)YOMI[k]=typeof m[k]==="string"?m[k]:(m[k].yomi||"");return fetch("data/videos.json",{cache:"no-cache"})}).then(r=>{if(!r.ok)throw 0;return r.json()}).then(d=>{
+fetch("data/members.json",{cache:"no-cache"}).then(r=>r.ok?r.json():{}).catch(()=>({})).then(m=>{MEM=m;YOMI={};for(const k in m)YOMI[k]=typeof m[k]==="string"?m[k]:(m[k].yomi||"");return fetch("data/kinds.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null).then(kj=>{if(kj&&Array.isArray(kj.rules))KR=kj.rules;return fetch("data/videos.json",{cache:"no-cache"})})}).then(r=>{if(!r.ok)throw 0;return r.json()}).then(d=>{
  V=d.videos;prep();document.getElementById("upd").textContent="最終更新："+d.updated;render();
 }).catch(()=>{list.innerHTML='<p class="empty">動画の情報を読み込めませんでした。時間をおいて、もう一度開いてください。</p>'});
 </script>

@@ -11,6 +11,23 @@ _T = r"(?:[0-9０-９]+[:：])?[0-9０-９]+[:：][0-9０-９]{2}"          # 4:
 TIME_LINE = re.compile(r"^[\[【(（\s]*(" + _T + r")[\]】)）\s]*[-–—〜~:：]?\s*(.*)$")   # 行の先頭が時刻
 TIME_ANY = re.compile(r"(?<![0-9０-９:：])" + _T + r"(?![0-9０-９])")          # 文中のどこかにある時刻
 JST = timezone(timedelta(hours=9))
+DEFAULT_RULES = [{"name": "一般質問", "title": ["一般質問"]}, {"name": "予算特別委員会", "title": ["予算特別委員会"]},
+                 {"name": "議案の審議", "title": ["議案"]}]
+KINDS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "kinds.json")
+
+def load_rules(path=KINDS):
+    """data/kinds.json の「rules」を読む。読めなければ、内蔵の既定を使う。"""
+    try:
+        rules = json.load(open(path, encoding="utf-8"))["rules"]
+        return rules if isinstance(rules, list) else DEFAULT_RULES
+    except Exception:
+        return DEFAULT_RULES
+
+def classify(title, rules=None):
+    """上から順に、タイトルに言葉が入っていた最初の種類を返す。どれにも合わなければ「その他」。"""
+    for r in (DEFAULT_RULES if rules is None else rules):
+        if any(w in title for w in r.get("title", [])): return r["name"]
+    return "その他"
 
 def _parse(desc):
     body = desc.split("********")[0]   # 「********」より下は全動画共通の注意書きなので使わない
@@ -118,6 +135,11 @@ def main():
     videos = fetch_videos()
     if not videos:
         sys.exit("動画が1本も取得できなかったため、今のデータを残して終了します。")
+    rules = load_rules()
+    others = [v["title"] for v in videos if classify(v["title"], rules) == "その他"]
+    if others:   # 新しい種類の動画が出たら、GitHubの実行記録に青い知らせとして出る
+        msg = "%0A".join(others[:10]) + ("%%0A…ほか%d本" % (len(others) - 10) if len(others) > 10 else "")
+        print("::notice title=種類が「その他」の動画（%d本）::新しい種類なら data/kinds.json に1行足してください。%%0A%s" % (len(others), msg))
     try:
         old = json.load(open(OUT, encoding="utf-8")).get("videos")
     except Exception:

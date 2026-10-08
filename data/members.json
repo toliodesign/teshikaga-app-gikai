@@ -1,4 +1,68 @@
 {
- "板垣": "いたがき",
- "萩原": "はぎわら"
+ "川上": {
+  "full": "川上椋輔",
+  "yomi": "かわかみ",
+  "photo": "https://www.town.teshikaga.hokkaido.jp/material/images/group/15/1-kawakami.JPG",
+  "page": "https://www.town.teshikaga.hokkaido.jp/kurashi/machizukurijoho/teshikagachogikai/giinnmeibo/3401.html"
+ },
+ "板垣": {
+  "full": "板垣牧",
+  "yomi": "いたがき",
+  "photo": "https://www.town.teshikaga.hokkaido.jp/material/images/group/15/2-itagaki.JPG",
+  "page": "https://www.town.teshikaga.hokkaido.jp/kurashi/machizukurijoho/teshikagachogikai/giinnmeibo/3401.html"
+ },
+ "萩原": {
+  "full": "萩原寛暢",
+  "yomi": "はぎわら",
+  "photo": "https://www.town.teshikaga.hokkaido.jp/material/images/group/15/3-hagiwara-.JPG",
+  "page": "https://www.town.teshikaga.hokkaido.jp/kurashi/machizukurijoho/teshikagachogikai/giinnmeibo/3401.html"
+ },
+ "大道": {
+  "full": "大道賞二",
+  "yomi": "おおみち",
+  "photo": "https://www.town.teshikaga.hokkaido.jp/material/images/group/15/4-oomiti-.JPG",
+  "page": "https://www.town.teshikaga.hokkaido.jp/kurashi/machizukurijoho/teshikagachogikai/giinnmeibo/3401.html"
+ },
+ "徳永": {
+  "full": "徳永則行",
+  "yomi": "とくなが",
+  "photo": "https://www.town.teshikaga.hokkaido.jp/material/images/group/15/5-tokunaga-.JPG",
+  "page": "https://www.town.teshikaga.hokkaido.jp/kurashi/machizukurijoho/teshikagachogikai/giinnmeibo/3401.html"
+ },
+ "武山": {
+  "full": "武山秀樹",
+  "yomi": "たけやま",
+  "photo": "https://www.town.teshikaga.hokkaido.jp/material/images/group/15/6-takeyama-.JPG",
+  "page": "https://www.town.teshikaga.hokkaido.jp/kurashi/machizukurijoho/teshikagachogikai/giinnmeibo/3401.html"
+ },
+ "三上": {
+  "full": "三上務",
+  "yomi": "みかみ",
+  "photo": "https://www.town.teshikaga.hokkaido.jp/material/images/group/15/7-mikami-.JPG",
+  "page": "https://www.town.teshikaga.hokkaido.jp/kurashi/machizukurijoho/teshikagachogikai/giinnmeibo/3401.html"
+ },
+ "高砂": {
+  "full": "高砂弥生",
+  "yomi": "たかさご",
+  "photo": "https://www.town.teshikaga.hokkaido.jp/material/images/group/15/8-takasago-.jpg",
+  "page": "https://www.town.teshikaga.hokkaido.jp/kurashi/machizukurijoho/teshikagachogikai/giinnmeibo/3401.html"
+ },
+ "鈴木": {
+  "full": "鈴木康弘",
+  "yomi": "すずき",
+  "photo": "https://www.town.teshikaga.hokkaido.jp/material/images/group/15/9-suzuki-.JPG",
+  "page": "https://www.town.teshikaga.hokkaido.jp/kurashi/machizukurijoho/teshikagachogikai/giinnmeibo/3401.html"
+ },
+ "高橋": {
+  "full": "高橋正秀",
+  "yomi": "たかはし",
+  "photo": "https://www.town.teshikaga.hokkaido.jp/material/images/group/15/10-takahasi-.JPG",
+  "page": "https://www.town.teshikaga.hokkaido.jp/kurashi/machizukurijoho/teshikagachogikai/giinnmeibo/3401.html"
+ },
+ "近江屋": {
+  "full": "近江屋茂",
+  "yomi": "おおみや",
+  "photo": "https://www.town.teshikaga.hokkaido.jp/material/images/group/15/11-oomiya-.JPG",
+  "page": "https://www.town.teshikaga.hokkaido.jp/kurashi/machizukurijoho/teshikagachogikai/giinnmeibo/3401.html"
+ }
 }

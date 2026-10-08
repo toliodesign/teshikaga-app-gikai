@@ -3,11 +3,17 @@ on:
   schedule:
     - cron: "0 21 * * *"   # 毎日 日本時間の朝6時
   workflow_dispatch:        # 手動でも実行できる
+concurrency:
+  group: update-videos      # 同時に2つ動かさない
+  cancel-in-progress: false
 permissions:
-  contents: write
+  contents: read            # 全体は「読むだけ」。書き込みは、下の更新の作業だけに許す
 jobs:
   update:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -18,7 +24,7 @@ jobs:
       - name: YouTubeから動画情報を集める
         run: python scripts/update.py
         env:
-          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}
+          YOUTUBE_API_KEY: ${{ secrets.YOUTUBE_API_KEY }}   # キーを渡すのは、この作業だけ
       - name: 変更があれば保存する
         run: |
           git config user.name "github-actions"

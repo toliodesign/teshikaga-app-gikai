@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>弟子屈町議会 動画目次（非公式）</title>
 <link href="https://fonts.googleapis.com/css2?family=BIZ+UDPGothic:wght@400;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@300&display=swap&text=%E5%BC%9F%E5%AD%90%E5%B1%88%E7%94%BA%E8%AD%B0%E4%BC%9A%E5%8B%95%E7%94%BB%E7%9B%AE%E6%AC%A1" rel="stylesheet">
 <style>
 :root{--bg:#f6f8fb;--card:#fff;--ink:#1b2430;--sub:#4a5565;--line:#b8c2d0;--pri:#17358a;--priink:#fff;--mark:#fff3b0;--ts:#9b1c1c;--fs:18px;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10151d;--card:#18202b;--ink:#f1f4f8;--sub:#b9c3d1;--line:#52607a;--pri:#9db8ff;--priink:#0d1a3d;--mark:#5b4b00;--ts:#ff9a9a}}
@@ -13,7 +14,8 @@
 html{font-size:var(--fs)}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",Meiryo,sans-serif;line-height:1.8}
 .wrap{max-width:46rem;margin:0 auto;padding:1rem}
-h1{font-size:1.5rem;line-height:1.4;margin:.5rem 0}
+h1{font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic",Meiryo,sans-serif;font-size:2.25rem;font-weight:300;letter-spacing:.06em;line-height:1.35;margin:.6rem 0 1rem;overflow-wrap:anywhere}
+.yt{color:var(--ts)}
 h2{font-size:1.2rem;margin:1.6rem 0 .6rem;padding-left:.6rem;border-left:.4rem solid var(--pri)}
 .notice{border:2px solid var(--line);background:var(--card);padding:.7rem .9rem;border-radius:.4rem;font-size:.9rem;color:var(--sub)}
 .notice strong{color:var(--ink)}
@@ -132,7 +134,7 @@ function card(v,k){
  if(v.member&&view!=="member") h+=memChip(v.member);
  if(v.qs) h+=v.qs.map(b=>qBlock(v,b,k)).join("");
  if(v.items&&!v.qs) h+='<details'+(k?' open':'')+'><summary>この動画の内容（'+v.items.length+'件）</summary><ul class="items">'+v.items.map(x=>'<li>'+tl(v,x[0])+itemText(v,x[1],k)+'</li>').join("")+'</ul></details>';
- return h+'<p><a href="'+(v.id?W(v):CH)+'" target="_blank" rel="noopener">YouTubeで動画を見る</a></p></article>';
+ return h+'<p><a class="yt" href="'+(v.id?W(v):CH)+'" target="_blank" rel="noopener" aria-label="YouTubeに移動：'+esc(v.title)+'（新しいタブで開く）">YouTubeに移動</a></p></article>';
 }
 const fyName=v=>v.fy?"令和"+v.fy+"年":"年不明";
 let YOMI={},MEM={};

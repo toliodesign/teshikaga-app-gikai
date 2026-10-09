@@ -43,7 +43,10 @@ V.forEach((v,i)=>{
  v.kind=kindOf(t);
  if(v.q&&!v.qs)v.qs=[{time:"",label:"",q:v.q,gist:v.gist||""}];   // 古い形のデータも読める
  v.text=[t,...(v.qs||[]).map(b=>b.label+" "+b.q+" "+b.gist),...(v.items||[]).map(x=>x[1])].join(" ");
-});}
+});
+ const sd={};V.forEach(v=>{if(v.dk&&(!(v.session in sd)||v.dk<sd[v.session]))sd[v.session]=v.dk});   // 「第○回」ごとの開始日
+ V.forEach(v=>{v.sd=sd[v.session]||0});
+}
 const list=document.getElementById("list"),count=document.getElementById("count"),q=document.getElementById("q");
 const kindsEl=document.getElementById("kinds"),yearBtn=document.getElementById("yearbtn"),popEl=document.getElementById("yearpop"),memBtn=document.getElementById("memberbtn"),memPop=document.getElementById("memberpop"),resetBtn=document.getElementById("reset");
 list.addEventListener("error",e=>{if(e.target&&e.target.tagName==="IMG")e.target.remove()},true);   // 写真が読めないときは、名前のリンクだけにする
@@ -95,7 +98,7 @@ function render(){
  setLabel(yearBtn,'年別'+(yearSel!==null?'<span class="sel">（'+fyName({fy:yearSel})+'）</span>':'')+'<span aria-hidden="true"> ▾</span>');
  setLabel(memBtn,'議員別'+(memSel!==null?'<span class="sel">（'+esc(memSel)+'議員）</span>':'')+'<span aria-hidden="true"> ▾</span>');
  let arr=baseK.filter(byY).filter(byM);   // 年・議員の絞り込みは、どの表示でも残る
- arr.sort((a,b)=>(a.dk-b.dk)*(asc?1:-1)||a.cn-b.cn||a._i-b._i);   // 会議日の順（並べ替えボタンで新旧を切り替え）。同じ日の中は、円数字（①②…）の小さい順
+ arr.sort((a,b)=>(a.sd-b.sd)*(asc?1:-1)||(a.session<b.session?-1:a.session>b.session?1:0)||a.dk-b.dk||a.cn-b.cn||a._i-b._i);   // 議会（第○回）の順は、並べ替えボタンで新旧を切り替え。同じ議会の中は、日にちの若い順（1日目→2日目…）、同じ日の中は円数字（①②…）の小さい順
  let h="";
  if(view==="member"){
   arr=arr.filter(v=>v.member);

@@ -60,8 +60,9 @@ footer{margin:2rem 0 1rem;color:var(--sub);font-size:.85rem}
 .ttl{background:linear-gradient(transparent 66.667%,var(--ttl) 66.667%);padding:0 .2em;margin-left:-.2em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
 .ttl mark{background:var(--mkt)}
 #upd{font-size:.741rem;text-align:right}
-.kb{font-size:.741rem}
-.kl{font-size:.889rem}
+.kb{font-size:.741rem;min-height:2rem;padding:.1rem .5rem;line-height:1.3}
+.kl{font-size:.889rem;font-weight:700}
+#kinds{gap:.35rem .4rem;margin:.7rem 0}
 .pw{position:relative;display:inline-block}
 .pop{position:absolute;left:0;top:calc(100% + .3rem);z-index:20;width:max-content;min-width:14rem;max-width:calc(100vw - 1rem);background:var(--card);border:1px solid var(--line);border-radius:.4rem;box-shadow:0 6px 18px rgba(0,0,0,.18);padding:.3rem}
 .pop[hidden]{display:none}

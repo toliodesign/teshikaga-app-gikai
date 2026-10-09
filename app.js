@@ -39,6 +39,7 @@ V.forEach((v,i)=>{
  v.cn=cm?cm[0].charCodeAt(0)-0x245f:0;   // 円数字（①＝1、②＝2…）。ないときは0
  v.day=(t.match(/(\d+日目)/)||[])[1]||"";
  v.date=(t.match(/（(\d+\/\d+[^）]*)）/)||[])[1]||"";
+ v.ds=v.date&&ry?(2018+ry)+"/"+v.date:v.date;   // 表示用の会議日（西暦つき）。例：令和8年の「6/2火」→「2026/6/2火」
  v.member=(t.match(/一般質問（(.+?)議員）/)||[])[1]||"";
  v.kind=kindOf(t);
  if(v.q&&!v.qs)v.qs=[{time:"",label:"",q:v.q,gist:v.gist||""}];   // 古い形のデータも読める
@@ -58,7 +59,7 @@ function hl(s,k){   // 元の文字を先に分けてから、1つずつ安全�
  return s.split(re).map((p,i)=>i%2?"<mark>"+esc(p)+"</mark>":esc(p)).join("");
 }
 function card(v,k){
- let h='<article class="card"><h3><span class="ttl">'+hl(v.title,k)+'</span></h3><p class="meta"><span class="tag">'+esc(v.kind)+'</span>'+'会議日 '+esc(v.date||"不明")+'　公開日 '+esc(v.pub.replace(/-/g,"/"))+'</p>';
+ let h='<article class="card"><h3><span class="ttl">'+hl(v.title,k)+'</span></h3><p class="meta"><span class="tag">'+esc(v.kind)+'</span>'+'会議日 '+esc(v.ds||"不明")+'</p>';
  if(v.member&&view!=="member") h+=memChip(v.member);
  if(v.qs) h+=v.qs.map(b=>qBlock(v,b,k)).join("");
  if(v.items&&!v.qs) h+='<details'+(k?' open':'')+'><summary>この動画の内容（'+v.items.length+'件）</summary><ul class="items">'+v.items.map(x=>'<li>'+tl(v,x[0])+itemText(v,x[1],k)+'</li>').join("")+'</ul></details>';
@@ -67,7 +68,7 @@ function card(v,k){
 const fyName=v=>v.fy?"令和"+v.fy+"年":"年不明";
 let YOMI={},MEM={};
 // 動画の種類を決めるきまり。data/kinds.json があればそちらを使う（上から順に、タイトルに言葉が入っていた最初の種類になる）
-let KR=[{name:"一般質問",title:["一般質問"]},{name:"予算特別委員会",title:["予算特別委員会"]},{name:"議案の審議",title:["議案"]}];
+let KR=[{name:"一般質問",title:["一般質問"]},{name:"決算審査特別委員会",title:["決算審査特別委員"]},{name:"予算特別委員会",title:["予算特別委員"]},{name:"臨時会",title:["臨時会"]},{name:"方針説明",title:["執行方針","行政方針"]},{name:"議案の審議",title:["議案"]}];
 const kindOf=t=>{for(const r of KR)if((r.title||[]).some(w=>t.includes(w)))return r.name;return "その他"};
 const cmpY=(a,b)=>(YOMI[a]||a).localeCompare(YOMI[b]||b,"ja");
 const NUM=(a,b)=>b.localeCompare(a,"ja",{numeric:true});

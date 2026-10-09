@@ -6,7 +6,8 @@ html{font-size:var(--fs)}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",Meiryo,sans-serif;line-height:1.8}
 .wrap{max-width:46rem;margin:0 auto;padding:1rem}
 h1{font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic",Meiryo,sans-serif;font-size:2.25rem;font-weight:300;letter-spacing:.06em;line-height:1.35;margin:.6rem 0 1rem;overflow-wrap:anywhere}
-.yt{color:var(--ts)}
+.yt{color:var(--ts);font-size:.889rem;display:inline-block;padding:.4rem .3rem;margin:-.4rem -.3rem}   /* 12pt（標準のとき）。押せる範囲は広いまま、見た目の余白は詰める */
+.ytp{margin:.2rem 0 0;text-align:right;line-height:1.4}
 h2{font-size:1.2rem;margin:1.6rem 0 .6rem;padding-left:.6rem;border-left:.4rem solid var(--pri)}
 .notice{border:2px solid var(--line);background:var(--card);padding:.7rem .9rem;border-radius:.4rem;font-size:.9rem;color:var(--sub)}
 .notice strong{color:var(--ink)}
@@ -30,7 +31,7 @@ button.flip .ico{transform:scaleY(-1)}
 label{display:block;font-weight:700;margin-top:.8rem}
 input[type=search]{width:100%;min-height:2.9rem;padding:.4rem .8rem;border:2px solid var(--line);border-radius:.4rem;background:var(--card)}
 .count{color:var(--sub);margin:.6rem 0}
-.card{background:var(--card);border:1px solid var(--line);border-radius:.4rem;padding:.8rem 1rem;margin:.7rem 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:1rem;padding:.8rem 1rem .4rem;margin:.7rem 0}
 .card h3{font-size:1.05rem;line-height:1.5;margin:0 0 .3rem}
 .meta{margin:0;color:var(--sub);font-size:.9rem}
 .tag{display:inline-block;border:1px solid var(--pri);color:var(--pri);border-radius:.3rem;padding:0 .5rem;font-size:.85rem;font-weight:700;margin-right:.4rem}

@@ -43,9 +43,9 @@ V.forEach((v,i)=>{
  v.text=[t,...(v.qs||[]).map(b=>b.label+" "+b.q+" "+b.gist),...(v.items||[]).map(x=>x[1])].join(" ");
 });}
 const list=document.getElementById("list"),count=document.getElementById("count"),q=document.getElementById("q");
-const kindsEl=document.getElementById("kinds");
+const kindsEl=document.getElementById("kinds"),yearBtn=document.getElementById("yearbtn"),popEl=document.getElementById("yearpop"),memBtn=document.getElementById("memberbtn"),memPop=document.getElementById("memberpop"),resetBtn=document.getElementById("reset");
 list.addEventListener("error",e=>{if(e.target&&e.target.tagName==="IMG")e.target.remove()},true);   // 写真が読めないときは、名前のリンクだけにする
-let view="session",asc=false,kind="";
+let view="session",asc=false,kind="",yearSel=null,memSel=null,popOpen="";
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function hl(s,k){   // 元の文字を先に分けてから、1つずつ安全な文字にする（「amp」などで表示が崩れない）
  s=String(s);if(!k)return esc(s);
@@ -53,7 +53,7 @@ function hl(s,k){   // 元の文字を先に分けてから、1つずつ安全�
  return s.split(re).map((p,i)=>i%2?"<mark>"+esc(p)+"</mark>":esc(p)).join("");
 }
 function card(v,k){
- let h='<article class="card"><h3>'+hl(v.title,k)+'</h3><p class="meta"><span class="tag">'+esc(v.kind)+'</span>'+'会議日 '+esc(v.date||"不明")+'　公開日 '+esc(v.pub.replace(/-/g,"/"))+'</p>';
+ let h='<article class="card"><h3><span class="ttl">'+hl(v.title,k)+'</span></h3><p class="meta"><span class="tag">'+esc(v.kind)+'</span>'+'会議日 '+esc(v.date||"不明")+'　公開日 '+esc(v.pub.replace(/-/g,"/"))+'</p>';
  if(v.member&&view!=="member") h+=memChip(v.member);
  if(v.qs) h+=v.qs.map(b=>qBlock(v,b,k)).join("");
  if(v.items&&!v.qs) h+='<details'+(k?' open':'')+'><summary>この動画の内容（'+v.items.length+'件）</summary><ul class="items">'+v.items.map(x=>'<li>'+tl(v,x[0])+itemText(v,x[1],k)+'</li>').join("")+'</ul></details>';
@@ -77,8 +77,22 @@ function render(){
  const have=new Set(V.map(v=>v.kind)),names=[];                       // 種類のボタンは、データにある種類から自動で作る
  KR.forEach(r=>{if(have.has(r.name)&&!names.includes(r.name))names.push(r.name)});
  if(have.has("その他"))names.push("その他");
- kindsEl.innerHTML='<span class="meta" aria-hidden="true">種類：</span>'+[""].concat(names).map(n=>'<button type="button" class="kb" data-kind="'+esc(n)+'" aria-pressed="'+(kind===n)+'">'+esc(n||"全種類")+'（'+(n?(cnt[n]||0):base.length)+'）</button>').join("");
- let arr=kind?base.filter(v=>v.kind===kind):base;
+ kindsEl.innerHTML='<span class="meta kl" aria-hidden="true">種類：</span>'+[""].concat(names).map(n=>'<button type="button" class="kb" data-kind="'+esc(n)+'" aria-pressed="'+(kind===n)+'">'+esc(n||"全種類")+'（'+(n?(cnt[n]||0):base.length)+'）</button>').join("");
+ const baseK=kind?base.filter(v=>v.kind===kind):base;
+ const yrs=[...new Set(V.map(v=>v.fy))].sort((a,b)=>b-a);          // 年の選択肢は、データから自動で作る（新しい年が増えれば、自動で増える）
+ const mems=[...new Set(V.map(v=>v.member).filter(Boolean))].sort(cmpY);   // 議員の選択肢も、データから自動で作る
+ if(yearSel!==null&&!yrs.includes(yearSel))yearSel=null;
+ if(memSel!==null&&!mems.includes(memSel))memSel=null;
+ const byY=v=>yearSel===null||v.fy===yearSel,byM=v=>memSel===null||v.member===memSel;
+ const forYear=baseK.filter(byM),forMem=baseK.filter(byY);                // 件数は、ほかの絞り込みを反映する
+ const cy={},cm={};forYear.forEach(v=>{cy[v.fy]=(cy[v.fy]||0)+1});forMem.forEach(v=>{if(v.member)cm[v.member]=(cm[v.member]||0)+1});
+ popEl.innerHTML=[null].concat(yrs).map(y=>'<button type="button" data-year="'+(y===null?"all":y)+'" aria-pressed="'+(yearSel===y)+'"><span>'+(y===null?"すべての年":fyName({fy:y}))+'</span><span>（'+(y===null?forYear.length:(cy[y]||0))+'）</span></button>').join("");
+ memPop.innerHTML=[null].concat(mems).map(n=>'<button type="button" data-member="'+(n===null?"all":esc(n))+'" aria-pressed="'+(memSel===n)+'"><span>'+(n===null?"すべての議員":esc(((MEM[n]&&MEM[n].full)||n)+"議員"))+'</span><span>（'+(n===null?forMem.filter(v=>v.member).length:(cm[n]||0))+'）</span></button>').join("");
+ popEl.hidden=popOpen!=="year";yearBtn.setAttribute("aria-expanded",String(popOpen==="year"));
+ memPop.hidden=popOpen!=="member";memBtn.setAttribute("aria-expanded",String(popOpen==="member"));
+ yearBtn.innerHTML='年別'+(yearSel!==null?'<span class="sel">（'+fyName({fy:yearSel})+'）</span>':'')+'<span aria-hidden="true"> ▾</span>';
+ memBtn.innerHTML='議員別'+(memSel!==null?'<span class="sel">（'+esc(memSel)+'議員）</span>':'')+'<span aria-hidden="true"> ▾</span>';
+ let arr=baseK.filter(byY).filter(byM);   // 年・議員の絞り込みは、どの表示でも残る
  arr.sort((a,b)=>asc?a.sk-b.sk:b.sk-a.sk);
  let h="";
  if(view==="member"){
@@ -100,17 +114,33 @@ function render(){
  const ord=view==="member"?(asc?"あいうえお順（逆）":"あいうえお順"):(asc?"古い順":"新しい順");
  sortBtn.classList.toggle("flip",asc);
  sortBtn.setAttribute("aria-label","並べ替え。いまは"+ord+"。押すと逆になります");
- count.textContent=arr.length+"本の動画が見つかりました（"+ord+"）";
+ resetBtn.disabled=!(k||kind||yearSel!==null||memSel!==null);   // 絞り込みがないときは、リセットは押せない
+ count.textContent=arr.length+"本の動画が見つかりました（"+ord+(yearSel!==null?"・"+fyName({fy:yearSel})+"のみ":"")+(memSel!==null?"・"+memSel+"議員のみ":"")+"）";
 }
 kindsEl.onclick=e=>{const b=e.target.closest("button[data-kind]");if(!b)return;const n=b.dataset.kind;kind=(n===kind)?"":n;render();
  const nb=[...kindsEl.querySelectorAll("button")].find(x=>x.dataset.kind===n);if(nb)nb.focus();};   // 押したあとも、同じボタンに操作が残るようにする
 const sortBtn=document.getElementById("sort");
 sortBtn.onclick=()=>{asc=!asc;render();};
+const popOf=o=>o==="year"?popEl:memPop,btnOf=o=>o==="year"?yearBtn:memBtn;
+// ポップアップが、画面の左右の端で切れないように、位置を調整する
+const place=p=>{const vw=document.documentElement.clientWidth,m=8;p.style.maxWidth=(vw-2*m)+"px";p.style.left="0px";
+ if(!p.getBoundingClientRect)return;
+ let r=p.getBoundingClientRect();if(r.right>vw-m)p.style.left=(-(r.right-(vw-m)))+"px";
+ r=p.getBoundingClientRect();if(r.left<m)p.style.left=(parseFloat(p.style.left)+(m-r.left))+"px";};
+const setPop=(o,focus)=>{popOpen=o;render();if(o)place(popOf(o));if(o&&focus){const p=popOf(o),t=p.querySelector('[aria-pressed="true"]')||p.querySelector("button");if(t)t.focus()}};
 document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>{
- view=b.dataset.view;
+ const was=popOpen;view=b.dataset.view;
  document.querySelectorAll("[data-view]").forEach(x=>x.setAttribute("aria-pressed",x===b));
- render();
+ const which=(view==="year"||view==="member")?view:"";
+ setPop(which&&was!==which?which:"",true);   // 「年別」「議員別」を押すと、選択肢が開く（もう一度押すと閉じる）
 });
+popEl.onclick=e=>{const b=e.target.closest("button[data-year]");if(!b)return;yearSel=b.dataset.year==="all"?null:+b.dataset.year;popOpen="";render();yearBtn.focus();};
+memPop.onclick=e=>{const b=e.target.closest("button[data-member]");if(!b)return;memSel=b.dataset.member==="all"?null:b.dataset.member;popOpen="";render();memBtn.focus();};
+[popEl,memPop].forEach(p=>p.addEventListener("keydown",e=>{if(e.key!=="ArrowDown"&&e.key!=="ArrowUp")return;const bs=[...p.querySelectorAll("button")],i=bs.indexOf(document.activeElement);if(!bs.length)return;e.preventDefault();bs[(i+(e.key==="ArrowDown"?1:-1)+bs.length)%bs.length].focus();}));
+document.addEventListener("keydown",e=>{if(e.key==="Escape"&&popOpen){const bt=btnOf(popOpen);setPop("");bt.focus();}});
+document.addEventListener("click",e=>{if(popOpen&&!e.target.closest(".pw"))setPop("");});   // 外を押したら閉じる
+if(typeof window!=="undefined")window.addEventListener("resize",()=>{if(popOpen)place(popOf(popOpen))});   // 画面の向きが変わっても、切れないようにする
+resetBtn.onclick=()=>{q.value="";kind="";yearSel=null;memSel=null;popOpen="";render();q.focus();};   // 検索の言葉・種類・年・議員をすべて解除する
 q.addEventListener("input",render);
 const SZ=[14,16,18,21,24];let fi=2;   // 左から 小（2段階目）・小（1段階目）・標準（中）・大（1段階目）・大（2段階目）
 const fss=document.getElementById("fss"),fsn=document.getElementById("fsn"),fsb=document.getElementById("fsb"),fsl=document.getElementById("fsl");

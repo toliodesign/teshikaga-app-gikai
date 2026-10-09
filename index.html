@@ -11,17 +11,6 @@
 <body>
 <main class="wrap">
 <h1>弟子屈町議会 動画目次</h1>
-<p class="notice"><strong>非公式の目次サイトです。</strong>弟子屈町議会の公式YouTubeチャンネルの動画を、探しやすく並べています。動画は議会の公式記録ではありません。</p>
-<p class="meta" id="upd"></p>
-<noscript><p class="notice">この目次を使うには、JavaScript を有効にしてください。動画は、<a href="https://www.youtube.com/channel/UCp1bEH7DOpEjf_hjgCmZFlQ">弟子屈町議会の公式YouTubeチャンネル</a>でもご覧になれます。</p></noscript>
-
-<div class="tools" role="group" aria-label="表示の切り替え">
-<button type="button" data-view="session" aria-pressed="true">議会ごと</button>
-<button type="button" data-view="year" aria-pressed="false">年別</button>
-<button type="button" data-view="member" aria-pressed="false">議員別</button>
-<button type="button" data-view="all" aria-pressed="false">すべて</button>
-</div>
-<div class="tools" id="kinds" role="group" aria-label="動画の種類で絞る"></div>
 <div class="tools" role="group" aria-label="見やすさの設定">
 <span class="fsg" role="group" aria-label="文字サイズ"><span aria-hidden="true">文字サイズ：</span>
 <button type="button" class="rnd fs-s" id="fss" aria-pressed="false" aria-label="小。文字を小さくする">小</button>
@@ -30,11 +19,23 @@
 <span class="sr" id="fsl" aria-live="polite"></span></span>
 <button type="button" class="ui" id="dark" aria-pressed="false">暗い画面にする</button>
 </div>
+<p class="notice"><strong>非公式の目次サイトです。</strong>弟子屈町議会の公式YouTubeチャンネルの動画を、探しやすく並べています。動画は議会の公式記録ではありません。</p>
+<p class="meta" id="upd"></p>
+<noscript><p class="notice">この目次を使うには、JavaScript を有効にしてください。動画は、<a href="https://www.youtube.com/channel/UCp1bEH7DOpEjf_hjgCmZFlQ">弟子屈町議会の公式YouTubeチャンネル</a>でもご覧になれます。</p></noscript>
+
+<div class="tools" role="group" aria-label="表示の切り替え">
+<button type="button" data-view="session" aria-pressed="true">議会ごと</button>
+<span class="pw"><button type="button" data-view="year" id="yearbtn" aria-pressed="false" aria-expanded="false" aria-controls="yearpop">年別</button><div class="pop" id="yearpop" role="group" aria-label="年を選ぶ" hidden></div></span>
+<span class="pw"><button type="button" data-view="member" id="memberbtn" aria-pressed="false" aria-expanded="false" aria-controls="memberpop">議員別</button><div class="pop" id="memberpop" role="group" aria-label="議員を選ぶ" hidden></div></span>
+<button type="button" data-view="all" aria-pressed="false">すべて</button>
+<button type="button" class="rst" id="reset" aria-label="検索の条件をすべてリセットする" title="リセット" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="23 4 23 10 17 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+</div>
+<div class="tools" id="kinds" role="group" aria-label="動画の種類で絞る"></div>
 
 <label for="q">キーワードで探す（例：ヒグマ、複合、議案第70号）</label>
 <input id="q" type="search" autocomplete="off">
 <div class="row"><p class="count" id="count" aria-live="polite"></p>
-<button type="button" class="ui" id="sort"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 3h14M3 8h10M5.5 13h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>並べ替え</button></div>
+<span class="rowbtns"><button type="button" class="ui" id="sort"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 3h14M3 8h10M5.5 13h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>並べ替え</button></span></div>
 <div id="list"></div>
 
 </main>

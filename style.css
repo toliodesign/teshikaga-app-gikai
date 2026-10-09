@@ -75,3 +75,9 @@ button .sel{font-weight:400}
 .rst svg{width:1.3rem;height:1.3rem}
 .rst:disabled{opacity:.45;cursor:not-allowed}
 .pw>button>*,.pop button>*{pointer-events:none}
+.totop{position:fixed;right:calc(1rem + env(safe-area-inset-right,0px));bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:40;width:3rem;height:3rem;min-height:0;padding:0;border-radius:50%;border:2px solid var(--pri);background:var(--pri);color:var(--priink);display:inline-flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.25);opacity:0;visibility:hidden;transform:translateY(.5rem);transition:opacity .2s,transform .2s,visibility .2s}
+.totop.show{opacity:1;visibility:visible;transform:none}
+.totop:hover{filter:brightness(1.15)}
+.totop svg{width:1.5rem;height:1.5rem}
+h1:focus{outline:none}
+@media (prefers-reduced-motion:reduce){.totop{transition:none}}

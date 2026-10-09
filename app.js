@@ -140,6 +140,14 @@ memPop.onclick=e=>{const b=e.target.closest("button[data-member]");if(!b)return;
 [popEl,memPop].forEach(p=>p.addEventListener("keydown",e=>{if(e.key!=="ArrowDown"&&e.key!=="ArrowUp")return;const bs=[...p.querySelectorAll("button")],i=bs.indexOf(document.activeElement);if(!bs.length)return;e.preventDefault();bs[(i+(e.key==="ArrowDown"?1:-1)+bs.length)%bs.length].focus();}));
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&popOpen){const bt=btnOf(popOpen);setPop("");bt.focus();}});
 document.addEventListener("click",e=>{if(popOpen&&!e.composedPath().some(n=>n.classList&&n.classList.contains("pw")))setPop("");});   // 外を押したら閉じる
+// 「トップに戻る」ボタン：少しスクロールすると右下に出て、押すと先頭へ戻る
+const topBtn=document.getElementById("totop");
+if(typeof window!=="undefined"&&topBtn){
+ const syncTop=()=>topBtn.classList.toggle("show",window.scrollY>300);
+ window.addEventListener("scroll",syncTop,{passive:true});syncTop();
+ topBtn.onclick=()=>{const calm=window.matchMedia&&window.matchMedia("(prefers-reduced-motion: reduce)").matches;   // 動きを減らす設定のときは、すぐに戻る
+  window.scrollTo({top:0,behavior:calm?"auto":"smooth"});const t=document.querySelector("h1");if(t)t.focus({preventScroll:true});};   // 操作の位置も、先頭に戻す
+}
 if(typeof window!=="undefined")window.addEventListener("resize",()=>{if(popOpen)place(popOf(popOpen))});   // 画面の向きが変わっても、切れないようにする
 resetBtn.onclick=()=>{q.value="";kind="";yearSel=null;memSel=null;popOpen="";render();q.focus();};   // 検索の言葉・種類・年・議員をすべて解除する
 q.addEventListener("input",render);

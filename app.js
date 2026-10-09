@@ -16,6 +16,7 @@ const qBlock=(v,b,k)=>'<div class="qb"><p class="qh">'+(b.time?tl(v,b.time)+' ':
  +(b.gist?'<details'+(k&&b.gist.toLowerCase().includes(k.toLowerCase())?' open':'')+'><summary>【質問要旨】</summary><p class="gist">'+hl(b.gist,k)+'</p></details>':'')+'</div>';
 const tl=(v,t)=>{t=String(t);return v.id&&TIME_RE.test(t)?'<a class="t" href="'+W(v)+'&t='+sec(t)+'s" target="_blank" rel="noopener">'+t+'</a>':'<span class="t">'+esc(t)+'</span>'};
 let V=[];
+const setLabel=(b,html)=>{if(b.dataset.lab!==html){b.dataset.lab=html;b.innerHTML=html}};
 function prep(){
  const n0=V.length;
  V=V.filter(v=>v&&typeof v.title==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(v.pub||"")).map(v=>{
@@ -90,8 +91,8 @@ function render(){
  memPop.innerHTML=[null].concat(mems).map(n=>'<button type="button" data-member="'+(n===null?"all":esc(n))+'" aria-pressed="'+(memSel===n)+'"><span>'+(n===null?"すべての議員":esc(((MEM[n]&&MEM[n].full)||n)+"議員"))+'</span><span>（'+(n===null?forMem.filter(v=>v.member).length:(cm[n]||0))+'）</span></button>').join("");
  popEl.hidden=popOpen!=="year";yearBtn.setAttribute("aria-expanded",String(popOpen==="year"));
  memPop.hidden=popOpen!=="member";memBtn.setAttribute("aria-expanded",String(popOpen==="member"));
- yearBtn.innerHTML='年別'+(yearSel!==null?'<span class="sel">（'+fyName({fy:yearSel})+'）</span>':'')+'<span aria-hidden="true"> ▾</span>';
- memBtn.innerHTML='議員別'+(memSel!==null?'<span class="sel">（'+esc(memSel)+'議員）</span>':'')+'<span aria-hidden="true"> ▾</span>';
+ setLabel(yearBtn,'年別'+(yearSel!==null?'<span class="sel">（'+fyName({fy:yearSel})+'）</span>':'')+'<span aria-hidden="true"> ▾</span>');
+ setLabel(memBtn,'議員別'+(memSel!==null?'<span class="sel">（'+esc(memSel)+'議員）</span>':'')+'<span aria-hidden="true"> ▾</span>');
  let arr=baseK.filter(byY).filter(byM);   // 年・議員の絞り込みは、どの表示でも残る
  arr.sort((a,b)=>asc?a.sk-b.sk:b.sk-a.sk);
  let h="";
@@ -138,7 +139,7 @@ popEl.onclick=e=>{const b=e.target.closest("button[data-year]");if(!b)return;yea
 memPop.onclick=e=>{const b=e.target.closest("button[data-member]");if(!b)return;memSel=b.dataset.member==="all"?null:b.dataset.member;popOpen="";render();memBtn.focus();};
 [popEl,memPop].forEach(p=>p.addEventListener("keydown",e=>{if(e.key!=="ArrowDown"&&e.key!=="ArrowUp")return;const bs=[...p.querySelectorAll("button")],i=bs.indexOf(document.activeElement);if(!bs.length)return;e.preventDefault();bs[(i+(e.key==="ArrowDown"?1:-1)+bs.length)%bs.length].focus();}));
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&popOpen){const bt=btnOf(popOpen);setPop("");bt.focus();}});
-document.addEventListener("click",e=>{if(popOpen&&!e.target.closest(".pw"))setPop("");});   // 外を押したら閉じる
+document.addEventListener("click",e=>{if(popOpen&&!e.composedPath().some(n=>n.classList&&n.classList.contains("pw")))setPop("");});   // 外を押したら閉じる
 if(typeof window!=="undefined")window.addEventListener("resize",()=>{if(popOpen)place(popOf(popOpen))});   // 画面の向きが変わっても、切れないようにする
 resetBtn.onclick=()=>{q.value="";kind="";yearSel=null;memSel=null;popOpen="";render();q.focus();};   // 検索の言葉・種類・年・議員をすべて解除する
 q.addEventListener("input",render);

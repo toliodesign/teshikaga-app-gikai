@@ -16,7 +16,11 @@ VID_RE = re.compile(r"^[A-Za-z0-9_-]{11}$")   # YouTubeの動画IDの形
 def _cmd(s):
     """GitHubの実行記録に出す文字を安全な形にする（%や改行で、記録の命令が書き換わらないように）。"""
     return str(s).replace("%", "%25").replace("\r", "%0D").replace("\n", "%0A")
-DEFAULT_RULES = [{"name": "一般質問", "title": ["一般質問"]}, {"name": "予算特別委員会", "title": ["予算特別委員会"]},
+DEFAULT_RULES = [{"name": "一般質問", "title": ["一般質問"]},
+                 {"name": "決算審査特別委員会", "title": ["決算審査特別委員"]},
+                 {"name": "予算特別委員会", "title": ["予算特別委員"]},
+                 {"name": "臨時会", "title": ["臨時会"]},
+                 {"name": "方針説明", "title": ["執行方針", "行政方針"]},
                  {"name": "議案の審議", "title": ["議案"]}]
 KINDS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "kinds.json")
 

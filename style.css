@@ -45,8 +45,8 @@ mark{background:var(--mark);color:inherit}
 .gist{white-space:pre-line}
 .mem{display:inline-flex;align-items:center;gap:.7rem;margin:.4rem 0;color:var(--ink);font-weight:700;text-decoration:none}
 .mem img{width:3.5rem;height:4.5rem;object-fit:cover;object-position:top;border-radius:.3rem;border:1px solid var(--line);background:var(--card)}
-.mem small{display:block;font-weight:400;font-size:.8rem;color:var(--sub);text-decoration:underline}
-.mem:hover small{color:var(--pri)}
+.mem span{text-decoration:underline;text-underline-offset:.2em}   /* 名前の下の文字をなくしたので、リンクだとわかるよう、名前に下線を引く */
+.mem:hover span{color:var(--pri)}
 .kb{min-height:2.5rem;padding:.2rem .8rem;border:1px solid var(--pri);border-radius:.3rem;background:transparent;color:var(--pri);font-weight:700;font-size:.95rem}
 .kb[aria-pressed="true"]{background:var(--pri);color:var(--priink)}
 .qb{border-top:1px solid var(--line);margin-top:.7rem;padding-top:.4rem}
@@ -82,3 +82,4 @@ button .sel{font-weight:400}
 .totop svg{width:1.5rem;height:1.5rem}
 h1:focus{outline:none}
 @media (prefers-reduced-motion:reduce){.totop{transition:none}}
+.notice .links{display:block;text-align:right;font-size:.752rem}   /* 説明文（.9rem＝12.15pt）より2pt小さい 10.15pt */

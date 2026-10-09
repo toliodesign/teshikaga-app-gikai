@@ -34,8 +34,9 @@ V.forEach((v,i)=>{
  v.session=(t.match(/^(令和\d+年第\d+回(?:定例会|臨時会))/)||[])[1]||"未分類";
  const ry=+((t.match(/^令和(\d+)年/)||[])[1]||0);
  v.fy=ry;
- const kai=+((t.match(/第(\d+)回/)||[])[1]||0),dn=+((t.match(/(\d+)日目/)||[])[1]||0),cm=t.match(/[\u2460-\u2473]/);
- v.sk=ry*1e6+kai*1e4+dn*100+(cm?cm[0].charCodeAt(0)-0x245f:0);
+ const cm=t.match(/[\u2460-\u2473]/),md=t.match(/（(\d{1,2})\/(\d{1,2})/);
+ v.dk=ry&&md?(2018+ry)*10000+(+md[1])*100+(+md[2]):0;   // 会議日（年月日）。例：令和8年6/2 → 20260602
+ v.cn=cm?cm[0].charCodeAt(0)-0x245f:0;   // 円数字（①＝1、②＝2…）。ないときは0
  v.day=(t.match(/(\d+日目)/)||[])[1]||"";
  v.date=(t.match(/（(\d+\/\d+[^）]*)）/)||[])[1]||"";
  v.member=(t.match(/一般質問（(.+?)議員）/)||[])[1]||"";
@@ -94,7 +95,7 @@ function render(){
  setLabel(yearBtn,'年別'+(yearSel!==null?'<span class="sel">（'+fyName({fy:yearSel})+'）</span>':'')+'<span aria-hidden="true"> ▾</span>');
  setLabel(memBtn,'議員別'+(memSel!==null?'<span class="sel">（'+esc(memSel)+'議員）</span>':'')+'<span aria-hidden="true"> ▾</span>');
  let arr=baseK.filter(byY).filter(byM);   // 年・議員の絞り込みは、どの表示でも残る
- arr.sort((a,b)=>asc?a.sk-b.sk:b.sk-a.sk);
+ arr.sort((a,b)=>(a.dk-b.dk)*(asc?1:-1)||a.cn-b.cn||a._i-b._i);   // 会議日の順（並べ替えボタンで新旧を切り替え）。同じ日の中は、円数字（①②…）の小さい順
  let h="";
  if(view==="member"){
   arr=arr.filter(v=>v.member);

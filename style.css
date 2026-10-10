@@ -1,13 +1,11 @@
-:root{--bg:#f6f8fb;--card:#fff;--ink:#1b2430;--sub:#4a5565;--line:#b8c2d0;--pri:#17358a;--priink:#fff;--mark:#fff3b0;--ttl:rgba(255,228,92,.667);--mkt:#ff9f1c;--ts:#9b1c1c;--fs:18px;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10151d;--card:#18202b;--ink:#f1f4f8;--sub:#b9c3d1;--line:#52607a;--pri:#9db8ff;--priink:#0d1a3d;--mark:#5b4b00;--ttl:rgba(111,93,0,.667);--mkt:#8a4f00;--ts:#ff9a9a}}
-:root[data-theme="dark"]{--bg:#10151d;--card:#18202b;--ink:#f1f4f8;--sub:#b9c3d1;--line:#52607a;--pri:#9db8ff;--priink:#0d1a3d;--mark:#5b4b00;--ttl:rgba(111,93,0,.667);--mkt:#8a4f00;--ts:#ff9a9a}
+:root{--bg:#f6f8fb;--card:#fff;--ink:#1b2430;--sub:#4a5565;--line:#b8c2d0;--pri:#17358a;--priink:#fff;--mark:#fff3b0;--ttl:rgba(255,228,92,.667);--mkt:#ff9f1c;--ts:#9b1c1c;--lnk:#0066CC;--fs:18px;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#10151d;--card:#18202b;--ink:#f1f4f8;--sub:#b9c3d1;--line:#52607a;--pri:#9db8ff;--priink:#0d1a3d;--mark:#5b4b00;--ttl:rgba(111,93,0,.667);--mkt:#8a4f00;--ts:#ff9a9a;--lnk:#7db8ff}}
+:root[data-theme="dark"]{--bg:#10151d;--card:#18202b;--ink:#f1f4f8;--sub:#b9c3d1;--line:#52607a;--pri:#9db8ff;--priink:#0d1a3d;--mark:#5b4b00;--ttl:rgba(111,93,0,.667);--mkt:#8a4f00;--ts:#ff9a9a;--lnk:#7db8ff}
 *,*::before,*::after{box-sizing:inherit}
 html{font-size:var(--fs)}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",Meiryo,sans-serif;line-height:1.8}
 .wrap{max-width:46rem;margin:0 auto;padding:1rem}
 h1{font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic",Meiryo,sans-serif;font-size:min(2.25rem,calc((100vw - 2rem)/6.5));font-weight:300;letter-spacing:.06em;line-height:1.35;margin:.6rem 0 1rem;overflow-wrap:anywhere}
-.yt{color:var(--ts);font-size:.889rem;display:inline-block;padding:.4rem .3rem;margin:-.4rem -.3rem}   /* 12pt（標準のとき）。押せる範囲は広いまま、見た目の余白は詰める */
-.ytp{margin:.2rem 0 0;text-align:right;line-height:1.4}
 h2{font-size:1.2rem;margin:1.6rem 0 .6rem;padding-left:.6rem;border-left:.4rem solid var(--pri)}
 .notice{border:2px solid var(--line);background:var(--card);padding:.7rem .9rem;border-radius:.4rem;font-size:.9rem;color:var(--sub)}
 .notice strong{color:var(--ink)}
@@ -31,25 +29,25 @@ button.flip .ico{transform:scaleY(-1)}
 label{display:block;font-weight:700;margin-top:.8rem}
 input[type=search]{width:100%;min-height:2.9rem;padding:.4rem .8rem;border:2px solid var(--line);border-radius:.4rem;background:var(--card)}
 .count{color:var(--sub);margin:.6rem 0}
-.card{background:var(--card);border:1px solid var(--line);border-radius:1rem;padding:.8rem 1rem .4rem;margin:.7rem 0}
+.card{background:var(--card);border:1px solid var(--line);border-radius:1rem;padding:.8rem 1rem;margin:.7rem 0}
 .card h3{font-size:1.05rem;line-height:1.5;margin:0 0 .3rem}
 .meta{margin:0;color:var(--sub);font-size:.9rem}
 .tag{display:inline-block;border:1px solid var(--pri);color:var(--pri);border-radius:.3rem;padding:0 .5rem;font-size:.85rem;font-weight:700;margin-right:.4rem}
 details{margin-top:.5rem}
 summary{cursor:pointer;font-weight:700;padding:.3rem 0;min-height:2.5rem;list-style:none}
 summary::-webkit-details-marker{display:none}   /* 標準の▶は使わず、色を決められる三角を自分で描く（Safariでも同じ色になる） */
-summary::before{content:"";display:inline-block;margin-right:.55em;vertical-align:.05em;border-style:solid;border-width:.36em 0 .36em .62em;border-color:transparent transparent transparent var(--ts)}   /* ▶：暗めの赤（#9b1c1c）。下線はなし */
-details[open]>summary::before{transform:rotate(90deg)}   /* 開くと▼になる */
+summary::before{content:"\25B6\FE0E\00a0";color:var(--lnk);font-size:.8em;text-decoration:underline;text-underline-offset:.15em;margin-right:.2em}   /* ▶：リンクと同じ青（#0066CC）＋下線。「\FE0E」は、絵文字にならず色が付くようにする指定 */
+details[open]>summary::before{content:"\25BC\FE0E\00a0"}   /* 開くと▼になる */
 ul.items{margin:.3rem 0;padding-left:0;list-style:none}
 ul.items li{padding:.2rem 0;border-top:1px solid var(--line)}
-.t{font-variant-numeric:tabular-nums;font-weight:700;margin-right:.6rem;color:var(--ts)}
-a{color:var(--pri);font-weight:700}
+.t{font-variant-numeric:tabular-nums;font-weight:700;margin-right:.6rem}
+a{color:var(--lnk);font-weight:700;text-decoration:underline}   /* リンクは、すべて #0066CC＋下線（暗い画面では、読めるよう明るい青に切り替わる） */
 mark{background:var(--mark);color:inherit}
 .gist{white-space:pre-line}
-.mem{display:inline-flex;align-items:center;gap:.7rem;margin:.4rem 0;color:var(--ink);font-weight:700;text-decoration:none}
+.mem{display:inline-flex;align-items:center;gap:.7rem;margin:.4rem 0;color:var(--lnk);font-weight:700;text-decoration:none}
 .mem img{width:3.5rem;height:4.5rem;object-fit:cover;object-position:top;border-radius:.3rem;border:1px solid var(--line);background:var(--card)}
 .mem span{text-decoration:underline;text-underline-offset:.2em}   /* 名前の下の文字をなくしたので、リンクだとわかるよう、名前に下線を引く */
-.mem:hover span{color:var(--pri)}
+.mem:hover span{text-decoration-thickness:.12em}
 .kb{min-height:2.5rem;padding:.2rem .8rem;border:1px solid var(--pri);border-radius:.3rem;background:transparent;color:var(--pri);font-weight:700;font-size:.95rem}
 .kb[aria-pressed="true"]{background:var(--pri);color:var(--priink)}
 .qb{border-top:1px solid var(--line);margin-top:.7rem;padding-top:.4rem}

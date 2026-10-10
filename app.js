@@ -1,5 +1,4 @@
 "use strict";
-const CH="https://www.youtube.com/channel/UCp1bEH7DOpEjf_hjgCmZFlQ";
 // ---- 安全のための点検（データは外から来るものとして扱い、決まった形のものだけを画面に出す）
 const ID_RE=/^[\w-]{11}$/, TIME_RE=/^\d+:\d{2}(?::\d{2})?$/, TOWN="https://www.town.teshikaga.hokkaido.jp/";
 const okImg=u=>typeof u==="string"&&(u.startsWith(TOWN)||u.startsWith("data:image/svg+xml,"));
@@ -63,7 +62,7 @@ function card(v,k){
  if(v.member&&view!=="member") h+=memChip(v.member);
  if(v.qs) h+=v.qs.map(b=>qBlock(v,b,k)).join("");
  if(v.items&&!v.qs) h+='<details'+(k?' open':'')+'><summary>この動画の内容（'+v.items.length+'件）</summary><ul class="items">'+v.items.map(x=>'<li>'+tl(v,x[0])+itemText(v,x[1],k)+'</li>').join("")+'</ul></details>';
- return h+'<p class="ytp"><a class="yt" href="'+(v.id?W(v):CH)+'" target="_blank" rel="noopener" aria-label="YouTubeに移動：'+esc(v.title)+'（新しいタブで開く）">YouTubeに移動</a></p></article>';
+ return h+'</article>';
 }
 const fyName=v=>v.fy?"令和"+v.fy+"年":"年不明";
 let YOMI={},MEM={};

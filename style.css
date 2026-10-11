@@ -15,6 +15,7 @@ button{min-height:2.75rem;padding:.3rem 1rem;border:2px solid var(--pri);backgro
 button[aria-pressed="true"]{background:var(--pri);color:var(--priink)}
 button.ui{min-height:2.5rem;padding:.2rem .8rem;border:1px solid var(--line);background:transparent;color:var(--sub);font-weight:400;font-size:.85rem;display:inline-flex;align-items:center;gap:.4rem}
 button.ui[aria-pressed="true"]{background:var(--line);color:var(--ink)}
+.ic{width:1em;height:1em;flex:none;vertical-align:-.125em}
 .ico{width:1.1em;height:1.1em;transition:transform .25s}
 button.ui:disabled{opacity:.45;cursor:not-allowed}
 .fsg{display:inline-flex;align-items:center;gap:.5rem;color:var(--sub);font-size:.85rem}
@@ -35,9 +36,9 @@ input[type=search]{width:100%;min-height:2.9rem;padding:.4rem .8rem;border:2px s
 .tag{display:inline-block;border:1px solid var(--pri);color:var(--pri);border-radius:.3rem;padding:0 .5rem;font-size:.85rem;font-weight:700;margin-right:.4rem}
 details{margin-top:.5rem}
 summary{cursor:pointer;font-weight:700;padding:.3rem 0;min-height:2.5rem;list-style:none}
-summary::-webkit-details-marker{display:none}   /* 標準の▶は使わず、色を決められる三角を自分で描く（Safariでも同じ色になる） */
-summary::before{content:"\25B6\FE0E\00a0";color:var(--lnk);font-size:.8em;margin-right:.2em}   /* ▶：リンクと同じ青（#0066CC）。下線はなし。「\FE0E」は、絵文字にならず色が付くようにする指定 */
-details[open]>summary::before{content:"\25BC\FE0E\00a0"}   /* 開くと▼になる */
+summary::-webkit-details-marker{display:none}   /* 標準の▶は使わず、アイコンで描く（Safariでも同じ色になる） */
+summary .ic{width:.8em;height:.8em;margin-right:.45em;color:var(--lnk);vertical-align:-.05em}   /* ▶▼：リンクと同じ青。下線はなし */
+details[open]>summary .ic-r,details:not([open])>summary .ic-d{display:none}   /* 閉じているときは▶、開くと▼ */
 ul.items{margin:.3rem 0;padding-left:0;list-style:none}
 ul.items li{padding:.2rem 0;border-top:1px solid var(--line)}
 .t{font-variant-numeric:tabular-nums;font-weight:700;margin-right:.6rem}
@@ -86,3 +87,5 @@ h1:focus{outline:none}
 @media (prefers-reduced-motion:reduce){.totop{transition:none}}
 .notice .links{display:block;text-align:right;font-size:.752rem}   /* 説明文（.9rem＝12.15pt）より2pt小さい 10.15pt */
 .nb{display:inline-block}   /* タイトルは、「弟子屈町議会」「動画目次」の2つのかたまりで折り返す（かたまりの途中では切れない） */
+.ext{width:.8em;height:.8em;margin-left:.3em;vertical-align:-.05em}   /* 外部リンクの印（新しいタブで開く） */
+.ic-s{width:.8em;height:.8em;margin-left:.35em}   /* 年別・議員別の▾ */

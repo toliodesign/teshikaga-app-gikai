@@ -12,14 +12,14 @@
 <main class="wrap">
 <h1 tabindex="-1"><span class="nb">弟子屈町議会</span> <span class="nb">動画目次</span></h1>
 <div class="tools" role="group" aria-label="見やすさの設定">
-<span class="fsg" role="group" aria-label="文字サイズ"><span aria-hidden="true">文字サイズ：</span>
+<span class="fsg" role="group" aria-label="文字サイズ"><span aria-hidden="true"><span data-ic="text-height"></span> 文字サイズ：</span>
 <button type="button" class="rnd fs-s" id="fss" aria-pressed="false" aria-label="小。文字を小さくする">小</button>
 <button type="button" class="rnd fs-m" id="fsn" aria-pressed="true" aria-label="中。文字サイズを標準に戻す">中</button>
 <button type="button" class="rnd fs-l" id="fsb" aria-pressed="false" aria-label="大。文字を大きくする">大</button>
 <span class="sr" id="fsl" aria-live="polite"></span></span>
-<button type="button" class="ui" id="dark" aria-pressed="false">暗い画面にする</button>
+<button type="button" class="ui" id="dark" aria-pressed="false"><span data-ic="moon"></span>暗い画面にする</button>
 </div>
-<p class="notice"><strong>非公式の目次サイトです。</strong>弟子屈町議会の公式YouTubeチャンネルの動画を、探しやすく並べています。<span class="links"><strong>弟子屈町議会</strong>　<span aria-hidden="true">➡️</span> <a href="https://www.town.teshikaga.hokkaido.jp/kurashi/machizukurijoho/teshikagachogikai/index.html" target="_blank" rel="noopener" aria-label="弟子屈町議会の公式ページ（新しいタブで開く）">公式ページ</a>　<span aria-hidden="true">➡️</span> <a href="https://www.youtube.com/@%E5%BC%9F%E5%AD%90%E5%B1%88%E7%94%BA%E8%AD%B0%E4%BC%9A" target="_blank" rel="noopener" aria-label="弟子屈町議会の公式YouTubeチャンネル（新しいタブで開く）">公式YouTubeチャンネル</a></span></p>
+<p class="notice"><strong>非公式の目次サイトです。</strong>弟子屈町議会の公式YouTubeチャンネルの動画を、探しやすく並べています。<span class="links"><strong>弟子屈町議会</strong>　<span aria-hidden="true">➡️</span> <a href="https://www.town.teshikaga.hokkaido.jp/kurashi/machizukurijoho/teshikagachogikai/index.html" target="_blank" rel="noopener" aria-label="弟子屈町議会の公式ページ（新しいタブで開く）">公式ページ<span data-ic="arrow-up-right-from-square" data-cls="ext"></span></a>　<span aria-hidden="true">➡️</span> <a href="https://www.youtube.com/@%E5%BC%9F%E5%AD%90%E5%B1%88%E7%94%BA%E8%AD%B0%E4%BC%9A" target="_blank" rel="noopener" aria-label="弟子屈町議会の公式YouTubeチャンネル（新しいタブで開く）">公式YouTubeチャンネル<span data-ic="arrow-up-right-from-square" data-cls="ext"></span></a></span></p>
 <p class="meta" id="upd"></p>
 <noscript><p class="notice">この目次を使うには、JavaScript を有効にしてください。動画は、<a href="https://www.youtube.com/channel/UCp1bEH7DOpEjf_hjgCmZFlQ">弟子屈町議会の公式YouTubeチャンネル</a>でもご覧になれます。</p></noscript>
 
@@ -28,20 +28,21 @@
 <span class="pw"><button type="button" data-view="year" id="yearbtn" aria-pressed="false" aria-expanded="false" aria-controls="yearpop">年別</button><div class="pop" id="yearpop" role="group" aria-label="年を選ぶ" hidden></div></span>
 <span class="pw"><button type="button" data-view="member" id="memberbtn" aria-pressed="false" aria-expanded="false" aria-controls="memberpop">議員別</button><div class="pop" id="memberpop" role="group" aria-label="議員を選ぶ" hidden></div></span>
 <button type="button" data-view="all" aria-pressed="false">すべて</button>
-<button type="button" class="rst" id="reset" aria-label="検索の条件をすべてリセットする" title="リセット" disabled><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="23 4 23 10 17 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" class="rst" id="reset" aria-label="検索の条件をすべてリセットする" title="リセット" disabled><span data-ic="arrow-rotate-left"></span></button>
 </div>
 <div class="tools" id="kinds" role="group" aria-label="動画の種類で絞る"></div>
 
 <label for="q">キーワードで探す（例：ヒグマ、複合、議案第70号）</label>
 <input id="q" type="search" autocomplete="off">
 <div class="row"><p class="count" id="count" aria-live="polite"></p>
-<span class="rowbtns"><button type="button" class="ui" id="sort"><svg class="ico" viewBox="0 0 16 16" aria-hidden="true"><path d="M1 3h14M3 8h10M5.5 13h5" stroke="currentColor" stroke-width="2" stroke-linecap="round" fill="none"/></svg>並べ替え</button></span></div>
+<span class="rowbtns"><button type="button" class="ui" id="sort"><span data-ic="arrow-down-wide-short" data-cls="ico"></span>並べ替え</button></span></div>
 <div id="list"></div>
 
 </main>
-<footer class="wrap">この目次は自動で作られた非公式のものです。元の映像は、弟子屈町議会の公式YouTubeチャンネルでご覧ください。</footer>
+<footer class="wrap">この目次は自動で作られた非公式のものです。元の映像は、弟子屈町議会の公式YouTubeチャンネルでご覧ください。<br>アイコン：<a href="https://fontawesome.com" target="_blank" rel="noopener" aria-label="Font Awesome Free（新しいタブで開く）">Font Awesome Free</a>（<a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noopener" aria-label="ライセンス CC BY 4.0（新しいタブで開く）">CC BY 4.0</a>）。色と大きさを調整して使用しています。</footer>
 
-<button type="button" class="totop" id="totop" aria-label="ページの先頭へ戻る" title="トップに戻る"><svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="18 15 12 9 6 15" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+<button type="button" class="totop" id="totop" aria-label="ページの先頭へ戻る" title="トップに戻る"><span data-ic="chevron-up"></span></button>
+<script src="icons.js"></script>
 <script src="app.js"></script>
 </body>
 </html>

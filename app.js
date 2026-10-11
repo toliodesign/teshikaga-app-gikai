@@ -1,4 +1,6 @@
 "use strict";
+const SUMI=ic("caret-right","ic-r")+ic("caret-down","ic-d");   // 開閉部分の矢印（閉じているときは▶、開くと▼）
+document.querySelectorAll("[data-ic]").forEach(el=>{el.outerHTML=ic(el.dataset.ic,el.dataset.cls||"")});   // ページの中のアイコンの場所に、アイコンを入れる
 // ---- 安全のための点検（データは外から来るものとして扱い、決まった形のものだけを画面に出す）
 const ID_RE=/^[\w-]{11}$/, TIME_RE=/^\d+:\d{2}(?::\d{2})?$/, TOWN="https://www.town.teshikaga.hokkaido.jp/";
 const okImg=u=>typeof u==="string"&&(u.startsWith(TOWN)||u.startsWith("data:image/svg+xml,"));
@@ -9,11 +11,11 @@ const itemText=(v,t,k)=>t?t.split(TRE).map((p,i)=>i%2?tl(v,p):hl(p,k)).join(""):
 const memChip=n=>{const m=MEM[n];if(!m||typeof m!=="object"||typeof m.page!=="string"||!m.page.startsWith(TOWN))return"";const f=esc(m.full||n)+"議員";
  return '<a class="mem" href="'+esc(m.page)+'" target="_blank" rel="noopener" aria-label="'+f+'。弟子屈町公式サイトの議員名簿を新しいタブで開く">'
   +(okImg(m.photo)?'<img src="'+esc(m.photo)+'" alt="" width="56" height="72" loading="lazy">':'')
-  +'<span>'+f+'</span></a>';};
+  +'<span>'+f+ic("arrow-up-right-from-square","ext")+'</span></a>';};
 const qBlock=(v,b,k)=>'<div class="qb"><p class="qh">'+(b.time?tl(v,b.time)+' ':'')+hl(b.label||"",k)+'</p>'
  +(b.q?'<p class="qq"><b>【質問事項】</b>'+hl(b.q,k)+'</p>':'')
- +(b.gist?'<details'+(k&&b.gist.toLowerCase().includes(k.toLowerCase())?' open':'')+'><summary>【質問要旨】</summary><p class="gist">'+hl(b.gist,k)+'</p></details>':'')+'</div>';
-const tl=(v,t)=>{t=String(t);return v.id&&TIME_RE.test(t)?'<a class="t" href="'+W(v)+'&t='+sec(t)+'s" target="_blank" rel="noopener">'+t+'</a>':'<span class="t">'+esc(t)+'</span>'};
+ +(b.gist?'<details'+(k&&b.gist.toLowerCase().includes(k.toLowerCase())?' open':'')+'><summary>'+SUMI+'【質問要旨】</summary><p class="gist">'+hl(b.gist,k)+'</p></details>':'')+'</div>';
+const tl=(v,t)=>{t=String(t);return v.id&&TIME_RE.test(t)?'<a class="t" href="'+W(v)+'&t='+sec(t)+'s" target="_blank" rel="noopener" aria-label="'+t+'から再生（新しいタブで開く）">'+t+'</a>':'<span class="t">'+esc(t)+'</span>'};
 let V=[];
 const setLabel=(b,html)=>{if(b.dataset.lab!==html){b.dataset.lab=html;b.innerHTML=html}};
 function prep(){
@@ -61,7 +63,7 @@ function card(v,k){
  let h='<article class="card"><h3><span class="ttl">'+hl(v.title,k)+'</span></h3><p class="meta"><span class="tag">'+esc(v.kind)+'</span>'+'会議日 '+esc(v.ds||"不明")+'</p>';
  if(v.member&&view!=="member") h+=memChip(v.member);
  if(v.qs) h+=v.qs.map(b=>qBlock(v,b,k)).join("");
- if(v.items&&!v.qs) h+='<details'+(k?' open':'')+'><summary>この動画の内容（'+v.items.length+'件）</summary><ul class="items">'+v.items.map(x=>'<li>'+tl(v,x[0])+itemText(v,x[1],k)+'</li>').join("")+'</ul></details>';
+ if(v.items&&!v.qs) h+='<details'+(k?' open':'')+'><summary>'+SUMI+'この動画の内容（'+v.items.length+'件）</summary><ul class="items">'+v.items.map(x=>'<li>'+tl(v,x[0])+itemText(v,x[1],k)+'</li>').join("")+'</ul></details>';
  return h+'</article>';
 }
 const fyName=v=>v.fy?"令和"+v.fy+"年":"年不明";
@@ -95,8 +97,8 @@ function render(){
  memPop.innerHTML=[null].concat(mems).map(n=>'<button type="button" data-member="'+(n===null?"all":esc(n))+'" aria-pressed="'+(memSel===n)+'"><span>'+(n===null?"すべての議員":esc(((MEM[n]&&MEM[n].full)||n)+"議員"))+'</span><span>（'+(n===null?forMem.filter(v=>v.member).length:(cm[n]||0))+'）</span></button>').join("");
  popEl.hidden=popOpen!=="year";yearBtn.setAttribute("aria-expanded",String(popOpen==="year"));
  memPop.hidden=popOpen!=="member";memBtn.setAttribute("aria-expanded",String(popOpen==="member"));
- setLabel(yearBtn,'年別'+(yearSel!==null?'<span class="sel">（'+fyName({fy:yearSel})+'）</span>':'')+'<span aria-hidden="true"> ▾</span>');
- setLabel(memBtn,'議員別'+(memSel!==null?'<span class="sel">（'+esc(memSel)+'議員）</span>':'')+'<span aria-hidden="true"> ▾</span>');
+ setLabel(yearBtn,'年別'+(yearSel!==null?'<span class="sel">（'+fyName({fy:yearSel})+'）</span>':'')+ic("caret-down","ic-s"));
+ setLabel(memBtn,'議員別'+(memSel!==null?'<span class="sel">（'+esc(memSel)+'議員）</span>':'')+ic("caret-down","ic-s"));
  let arr=baseK.filter(byY).filter(byM);   // 年・議員の絞り込みは、どの表示でも残る
  arr.sort((a,b)=>(a.sd-b.sd)*(asc?1:-1)||(a.session<b.session?-1:a.session>b.session?1:0)||a.dk-b.dk||a.cn-b.cn||a._i-b._i);   // 議会（第○回）の順は、並べ替えボタンで新旧を切り替え。同じ議会の中は、日にちの若い順（1日目→2日目…）、同じ日の中は円数字（①②…）の小さい順
  let h="";

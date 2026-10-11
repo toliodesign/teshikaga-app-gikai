@@ -80,17 +80,18 @@ function group(arr,keyf,order){
 function render(){
  const k=q.value.trim();
  const base=V.filter(v=>!k||v.text.toLowerCase().includes(k.toLowerCase()));
- const cnt={};base.forEach(v=>{cnt[v.kind]=(cnt[v.kind]||0)+1});
- const have=new Set(V.map(v=>v.kind)),names=[];                       // 種類のボタンは、データにある種類から自動で作る
- KR.forEach(r=>{if(have.has(r.name)&&!names.includes(r.name))names.push(r.name)});
- if(have.has("その他"))names.push("その他");
- kindsEl.innerHTML='<span class="meta kl" aria-hidden="true">種類：</span>'+[""].concat(names).map(n=>'<button type="button" class="kb" data-kind="'+esc(n)+'" aria-pressed="'+(kind===n)+'">'+esc(n||"全種類")+'（'+(n?(cnt[n]||0):base.length)+'）</button>').join("");
- const baseK=kind?base.filter(v=>v.kind===kind):base;
  const yrs=[...new Set(V.map(v=>v.fy))].sort((a,b)=>b-a);          // 年の選択肢は、データから自動で作る（新しい年が増えれば、自動で増える）
  const mems=[...new Set(V.map(v=>v.member).filter(Boolean))].sort(cmpY);   // 議員の選択肢も、データから自動で作る
  if(yearSel!==null&&!yrs.includes(yearSel))yearSel=null;
  if(memSel!==null&&!mems.includes(memSel))memSel=null;
  const byY=v=>yearSel===null||v.fy===yearSel,byM=v=>memSel===null||v.member===memSel;
+ const kc=base.filter(byY).filter(byM);   // 種類の数字は、検索の言葉・年・議員の絞り込みを反映して数える（種類そのものの絞り込みは除く）
+ const cnt={};kc.forEach(v=>{cnt[v.kind]=(cnt[v.kind]||0)+1});
+ const have=new Set(V.map(v=>v.kind)),names=[];                       // 種類のボタンは、データにある種類から自動で作る
+ KR.forEach(r=>{if(have.has(r.name)&&!names.includes(r.name))names.push(r.name)});
+ if(have.has("その他"))names.push("その他");
+ kindsEl.innerHTML='<span class="meta kl" aria-hidden="true">種類：</span>'+[""].concat(names).map(n=>'<button type="button" class="kb" data-kind="'+esc(n)+'" aria-pressed="'+(kind===n)+'">'+esc(n||"全種類")+'（'+(n?(cnt[n]||0):kc.length)+'）</button>').join("");
+ const baseK=kind?base.filter(v=>v.kind===kind):base;
  const forYear=baseK.filter(byM),forMem=baseK.filter(byY);                // 件数は、ほかの絞り込みを反映する
  const cy={},cm={};forYear.forEach(v=>{cy[v.fy]=(cy[v.fy]||0)+1});forMem.forEach(v=>{if(v.member)cm[v.member]=(cm[v.member]||0)+1});
  popEl.innerHTML=[null].concat(yrs).map(y=>'<button type="button" data-year="'+(y===null?"all":y)+'" aria-pressed="'+(yearSel===y)+'"><span>'+(y===null?"すべての年":fyName({fy:y}))+'</span><span>（'+(y===null?forYear.length:(cy[y]||0))+'）</span></button>').join("");

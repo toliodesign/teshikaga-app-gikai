@@ -8,7 +8,7 @@ const W=v=>"https://www.youtube.com/watch?v="+v.id;
 const sec=t=>t.split(":").reduce((a,x)=>a*60+ +x,0);
 const TRE=/(\d+:\d{2}(?::\d{2})?)(?!\d)/;
 const itemText=(v,t,k)=>t?t.split(TRE).map((p,i)=>i%2?tl(v,p):hl(p,k)).join(""):"この場面から再生";
-const memChip=n=>{const m=MEM[n];if(!m||typeof m!=="object"||typeof m.page!=="string"||!m.page.startsWith(TOWN))return"";const f=esc(m.full||n)+"議員";
+const memChip=n=>{const m=PINFO[n];if(!m||typeof m.page!=="string"||!m.page.startsWith(TOWN))return"";const f=esc(m.full||n)+"議員"+(isFormer(m)?"（前議員）":"");
  return '<a class="mem" href="'+esc(m.page)+'" target="_blank" rel="noopener" aria-label="'+f+'。弟子屈町公式サイトの議員名簿を新しいタブで開く">'
   +(okImg(m.photo)?'<img src="'+esc(m.photo)+'" alt="" width="56" height="72" loading="lazy">':'')
   +'<span>'+f+ic("arrow-up-right-from-square","ext")+'</span></a>';};
@@ -19,6 +19,7 @@ const tl=(v,t)=>{t=String(t);return v.id&&TIME_RE.test(t)?'<a class="t" href="'+
 let V=[];
 const setLabel=(b,html)=>{if(b.dataset.lab!==html){b.dataset.lab=html;b.innerHTML=html}};
 function prep(){
+ normMembers();PINFO={};PY={};PSN={};SNC={};
  const n0=V.length;
  V=V.filter(v=>v&&typeof v.title==="string"&&/^\d{4}-\d{2}-\d{2}$/.test(v.pub||"")).map(v=>{
   if(!ID_RE.test(v.id||""))v.id="";
@@ -42,12 +43,16 @@ V.forEach((v,i)=>{
  v.date=(t.match(/（(\d+\/\d+[^）]*)）/)||[])[1]||"";
  v.ds=v.date&&ry?(2018+ry)+"/"+v.date:v.date;   // 表示用の会議日（西暦つき）。例：令和8年の「6/2火」→「2026/6/2火」
  v.member=(t.match(/一般質問（(.+?)議員）/)||[])[1]||"";
+ const mi=v.member?pickMember(v.member,v.dk):null;   // 名簿の中から、会議の日にちに合う人を選ぶ
+ v.pid=v.member?((mi&&mi.full)||v.member):"";   // 議員を区別する名前（名簿にあればフルネーム、なければ名字）
+ if(v.member){PSN[v.pid]=v.member;PINFO[v.pid]=mi;if(mi&&mi.yomi)PY[v.pid]=mi.yomi;}
  v.kind=kindOf(t);
  if(v.q&&!v.qs)v.qs=[{time:"",label:"",q:v.q,gist:v.gist||""}];   // 古い形のデータも読める
  v.text=[t,...(v.qs||[]).map(b=>b.label+" "+b.q+" "+b.gist),...(v.items||[]).map(x=>x[1])].join(" ");
 });
  const sd={};V.forEach(v=>{if(v.dk&&(!(v.session in sd)||v.dk<sd[v.session]))sd[v.session]=v.dk});   // 「第○回」ごとの開始日
  V.forEach(v=>{v.sd=sd[v.session]||0});
+ Object.keys(PSN).forEach(p=>{SNC[PSN[p]]=(SNC[PSN[p]]||0)+1});   // 名字ごとの人数（同じ名字の人がいるか）
 }
 const list=document.getElementById("list"),count=document.getElementById("count"),q=document.getElementById("q");
 const kindsEl=document.getElementById("kinds"),yearBtn=document.getElementById("yearbtn"),popEl=document.getElementById("yearpop"),memBtn=document.getElementById("memberbtn"),memPop=document.getElementById("memberpop"),resetBtn=document.getElementById("reset");
@@ -61,17 +66,33 @@ function hl(s,k){   // 元の文字を先に分けてから、1つずつ安全�
 }
 function card(v,k){
  let h='<article class="card"><h3><span class="ttl">'+hl(v.title,k)+'</span></h3><p class="meta"><span class="tag">'+esc(v.kind)+'</span>'+'会議日 '+esc(v.ds||"不明")+'</p>';
- if(v.member&&view!=="member") h+=memChip(v.member);
+ if(v.pid&&view!=="member") h+=memChip(v.pid);
  if(v.qs) h+=v.qs.map(b=>qBlock(v,b,k)).join("");
  if(v.items&&!v.qs) h+='<details'+(k?' open':'')+'><summary>'+SUMI+'この動画の内容（'+v.items.length+'件）</summary><ul class="items">'+v.items.map(x=>'<li>'+tl(v,x[0])+itemText(v,x[1],k)+'</li>').join("")+'</ul></details>';
  return h+'</article>';
 }
 const fyName=v=>v.fy?"令和"+v.fy+"年":"年不明";
-let YOMI={},MEM={};
+let YOMI={},MEM={},MEMN={},PINFO={},PY={},PSN={},SNC={};
+// ---- 議員名簿（members.json）：1人でも、同じ名字の複数人（[ ... ]）でも書ける。任期は since／until（例："2028-12-31"）で書く
+const ymd=s=>{const m=/^(\d{4})-(\d{2})-(\d{2})$/.exec(String(s||""));return m?+m[1]*10000+ +m[2]*100+ +m[3]:0};
+const todayN=()=>{const d=new Date();return d.getFullYear()*10000+(d.getMonth()+1)*100+d.getDate()};
+const isFormer=e=>!!(e&&e.u&&e.u<todayN());   // 任期の終わりを過ぎた議員は「前議員」
+function normMembers(){
+ MEMN={};
+ for(const k in MEM){if(k.startsWith("_"))continue;const raw=MEM[k];
+  MEMN[k]=(Array.isArray(raw)?raw:[raw]).map(e=>typeof e==="string"?{yomi:e}:(e&&typeof e==="object"?e:{})).map(e=>({full:String(e.full||""),yomi:String(e.yomi||""),photo:e.photo,page:e.page,s:ymd(e.since),u:ymd(e.until)}));}
+}
+function pickMember(sn,dk){   // 会議の日にちから、同じ名字の中のどの人かを決める
+ const list=MEMN[sn];if(!list||!list.length)return null;
+ const ok=list.filter(e=>(!e.s||dk>=e.s)&&(!e.u||dk<=e.u));
+ if(ok.length)return ok.sort((a,b)=>b.s-a.s)[0];
+ return list.slice().sort((a,b)=>b.s-a.s).find(e=>!e.s||dk>=e.s)||list[0];
+}
+const dispName=pid=>(SNC[PSN[pid]]>1?pid:(PSN[pid]||pid));   // 同じ名字が複数いるときだけ、フルネームで区別する
 // 動画の種類を決めるきまり。data/kinds.json があればそちらを使う（上から順に、タイトルに言葉が入っていた最初の種類になる）
 let KR=[{name:"一般質問",title:["一般質問"]},{name:"決算審査特別委員会",title:["決算審査特別委員"]},{name:"予算特別委員会",title:["予算特別委員"]},{name:"臨時会",title:["臨時会"]},{name:"方針説明",title:["執行方針","行政方針"]},{name:"議案の審議",title:["議案"]}];
 const kindOf=t=>{for(const r of KR)if((r.title||[]).some(w=>t.includes(w)))return r.name;return "その他"};
-const cmpY=(a,b)=>(YOMI[a]||a).localeCompare(YOMI[b]||b,"ja");
+const cmpY=(a,b)=>(PY[a]||YOMI[a]||a).localeCompare(PY[b]||YOMI[b]||b,"ja");
 const NUM=(a,b)=>b.localeCompare(a,"ja",{numeric:true});
 function group(arr,keyf,order){
  const m={};arr.forEach(v=>{const g=keyf(v);(m[g]=m[g]||[]).push(v)});
@@ -81,10 +102,10 @@ function render(){
  const k=q.value.trim();
  const base=V.filter(v=>!k||v.text.toLowerCase().includes(k.toLowerCase()));
  const yrs=[...new Set(V.map(v=>v.fy))].sort((a,b)=>b-a);          // 年の選択肢は、データから自動で作る（新しい年が増えれば、自動で増える）
- const mems=[...new Set(V.map(v=>v.member).filter(Boolean))].sort(cmpY);   // 議員の選択肢も、データから自動で作る
+ const mems=[...new Set(V.map(v=>v.pid).filter(Boolean))].sort(cmpY);   // 議員の選択肢も、データから自動で作る
  if(yearSel!==null&&!yrs.includes(yearSel))yearSel=null;
  if(memSel!==null&&!mems.includes(memSel))memSel=null;
- const byY=v=>yearSel===null||v.fy===yearSel,byM=v=>memSel===null||v.member===memSel;
+ const byY=v=>yearSel===null||v.fy===yearSel,byM=v=>memSel===null||v.pid===memSel;
  const kc=base.filter(byY).filter(byM);   // 種類の数字は、検索の言葉・年・議員の絞り込みを反映して数える（種類そのものの絞り込みは除く）
  const cnt={};kc.forEach(v=>{cnt[v.kind]=(cnt[v.kind]||0)+1});
  const have=new Set(V.map(v=>v.kind)),names=[];                       // 種類のボタンは、データにある種類から自動で作る
@@ -93,20 +114,20 @@ function render(){
  kindsEl.innerHTML='<span class="meta kl" aria-hidden="true">種類：</span>'+[""].concat(names).map(n=>'<button type="button" class="kb" data-kind="'+esc(n)+'" aria-pressed="'+(kind===n)+'">'+esc(n||"全種類")+'（'+(n?(cnt[n]||0):kc.length)+'）</button>').join("");
  const baseK=kind?base.filter(v=>v.kind===kind):base;
  const forYear=baseK.filter(byM),forMem=baseK.filter(byY);                // 件数は、ほかの絞り込みを反映する
- const cy={},cm={};forYear.forEach(v=>{cy[v.fy]=(cy[v.fy]||0)+1});forMem.forEach(v=>{if(v.member)cm[v.member]=(cm[v.member]||0)+1});
+ const cy={},cm={};forYear.forEach(v=>{cy[v.fy]=(cy[v.fy]||0)+1});forMem.forEach(v=>{if(v.pid)cm[v.pid]=(cm[v.pid]||0)+1});
  popEl.innerHTML=[null].concat(yrs).map(y=>'<button type="button" data-year="'+(y===null?"all":y)+'" aria-pressed="'+(yearSel===y)+'"><span>'+(y===null?"すべての年":fyName({fy:y}))+'</span><span>（'+(y===null?forYear.length:(cy[y]||0))+'）</span></button>').join("");
- memPop.innerHTML=[null].concat(mems).map(n=>'<button type="button" data-member="'+(n===null?"all":esc(n))+'" aria-pressed="'+(memSel===n)+'"><span>'+(n===null?"すべての議員":esc(((MEM[n]&&MEM[n].full)||n)+"議員"))+'</span><span>（'+(n===null?forMem.filter(v=>v.member).length:(cm[n]||0))+'）</span></button>').join("");
+ memPop.innerHTML=[null].concat(mems).map(n=>'<button type="button" data-member="'+(n===null?"all":esc(n))+'" aria-pressed="'+(memSel===n)+'"><span>'+(n===null?"すべての議員":esc(((PINFO[n]&&PINFO[n].full)||n)+"議員"+(isFormer(PINFO[n])?"（前議員）":"")))+'</span><span>（'+(n===null?forMem.filter(v=>v.pid).length:(cm[n]||0))+'）</span></button>').join("");
  popEl.hidden=popOpen!=="year";yearBtn.setAttribute("aria-expanded",String(popOpen==="year"));
  memPop.hidden=popOpen!=="member";memBtn.setAttribute("aria-expanded",String(popOpen==="member"));
  setLabel(yearBtn,'年別'+(yearSel!==null?'<span class="sel">（'+fyName({fy:yearSel})+'）</span>':'')+ic("caret-down","ic-s"));
- setLabel(memBtn,'議員別'+(memSel!==null?'<span class="sel">（'+esc(memSel)+'議員）</span>':'')+ic("caret-down","ic-s"));
+ setLabel(memBtn,'議員別'+(memSel!==null?'<span class="sel">（'+esc(dispName(memSel))+'議員）</span>':'')+ic("caret-down","ic-s"));
  let arr=baseK.filter(byY).filter(byM);   // 年・議員の絞り込みは、どの表示でも残る
  arr.sort((a,b)=>(a.sd-b.sd)*(asc?1:-1)||(a.session<b.session?-1:a.session>b.session?1:0)||a.dk-b.dk||a.cn-b.cn||a._i-b._i);   // 議会（第○回）の順は、並べ替えボタンで新旧を切り替え。同じ議会の中は、日にちの若い順（1日目→2日目…）、同じ日の中は円数字（①②…）の小さい順
  let h="";
  if(view==="member"){
-  arr=arr.filter(v=>v.member);
-  group(arr,v=>v.member,(a,b)=>asc?cmpY(b,a):cmpY(a,b)).forEach(g=>{
-   h+='<h2>'+esc(g)+'議員</h2>'+memChip(g)+arr.filter(v=>v.member===g).map(v=>card(v,k)).join("")});
+  arr=arr.filter(v=>v.pid);
+  group(arr,v=>v.pid,(a,b)=>asc?cmpY(b,a):cmpY(a,b)).forEach(g=>{
+   h+='<h2>'+esc(dispName(g))+'議員'+(isFormer(PINFO[g])?'（前議員）':'')+'</h2>'+memChip(g)+arr.filter(v=>v.pid===g).map(v=>card(v,k)).join("")});
   h+='<p class="meta">「議員別」には、タイトルに議員名がある動画（一般質問）だけが出ます。</p>';
  }else if(view==="year"){
   group(arr,fyName).forEach(g=>{
@@ -117,13 +138,13 @@ function render(){
   group(arr,v=>v.session).forEach(g=>{
    h+='<h2>'+esc(g)+'</h2>'+arr.filter(v=>v.session===g).map(v=>card(v,k)).join("")});
  }else h=arr.map(v=>card(v,k)).join("");
- if(!arr.length||(view==="member"&&!arr.some(v=>v.member))) h='<p class="empty">条件に合う動画はありません。別の言葉で探してみてください。</p>'+(view==="member"?h:"");
+ if(!arr.length||(view==="member"&&!arr.some(v=>v.pid))) h='<p class="empty">条件に合う動画はありません。別の言葉で探してみてください。</p>'+(view==="member"?h:"");
  list.innerHTML=h;
  const ord=view==="member"?(asc?"あいうえお順（逆）":"あいうえお順"):(asc?"古い順":"新しい順");
  sortBtn.classList.toggle("flip",asc);
  sortBtn.setAttribute("aria-label","並べ替え。いまは"+ord+"。押すと逆になります");
  resetBtn.disabled=!(k||kind||yearSel!==null||memSel!==null);   // 絞り込みがないときは、リセットは押せない
- count.textContent=arr.length+"本の動画が見つかりました（"+ord+(yearSel!==null?"・"+fyName({fy:yearSel})+"のみ":"")+(memSel!==null?"・"+memSel+"議員のみ":"")+"）";
+ count.textContent=arr.length+"本の動画が見つかりました（"+ord+(yearSel!==null?"・"+fyName({fy:yearSel})+"のみ":"")+(memSel!==null?"・"+dispName(memSel)+"議員のみ":"")+"）";
 }
 kindsEl.onclick=e=>{const b=e.target.closest("button[data-kind]");if(!b)return;const n=b.dataset.kind;kind=(n===kind)?"":n;render();
  const nb=[...kindsEl.querySelectorAll("button")].find(x=>x.dataset.kind===n);if(nb)nb.focus();};   // 押したあとも、同じボタンに操作が残るようにする
@@ -175,6 +196,6 @@ document.getElementById("dark").onclick=e=>{
  e.target.setAttribute("aria-pressed",on);
  document.documentElement.dataset.theme=on?"dark":"light";
 };
-fetch("data/members.json",{cache:"no-cache"}).then(r=>r.ok?r.json():{}).catch(()=>({})).then(m=>{MEM=m;YOMI={};for(const k in m)YOMI[k]=typeof m[k]==="string"?m[k]:(m[k].yomi||"");return fetch("data/kinds.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null).then(kj=>{if(kj&&Array.isArray(kj.rules))KR=kj.rules;return fetch("data/videos.json",{cache:"no-cache"})})}).then(r=>{if(!r.ok)throw 0;return r.json()}).then(d=>{
+fetch("data/members.json",{cache:"no-cache"}).then(r=>r.ok?r.json():{}).catch(()=>({})).then(m=>{MEM=m;return fetch("data/kinds.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null).then(kj=>{if(kj&&Array.isArray(kj.rules))KR=kj.rules;return fetch("data/videos.json",{cache:"no-cache"})})}).then(r=>{if(!r.ok)throw 0;return r.json()}).then(d=>{
  V=d.videos;prep();document.getElementById("upd").textContent="最終更新："+d.updated;render();
 }).catch(()=>{list.innerHTML='<p class="empty">動画の情報を読み込めませんでした。時間をおいて、もう一度開いてください。</p>'});

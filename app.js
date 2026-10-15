@@ -196,6 +196,9 @@ document.getElementById("dark").onclick=e=>{
  e.target.setAttribute("aria-pressed",on);
  document.documentElement.dataset.theme=on?"dark":"light";
 };
-fetch("data/members.json",{cache:"no-cache"}).then(r=>r.ok?r.json():{}).catch(()=>({})).then(m=>{MEM=m;return fetch("data/kinds.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null).then(kj=>{if(kj&&Array.isArray(kj.rules))KR=kj.rules;return fetch("data/videos.json",{cache:"no-cache"})})}).then(r=>{if(!r.ok)throw 0;return r.json()}).then(d=>{
- V=d.videos;prep();document.getElementById("upd").textContent="最終更新："+d.updated;render();
+fetch("data/members.json",{cache:"no-cache"}).then(r=>r.ok?r.json():{}).catch(()=>({})).then(m=>{MEM=m;return fetch("data/kinds.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null).then(kj=>{if(kj&&Array.isArray(kj.rules))KR=kj.rules;return fetch("data/videos.json",{cache:"no-cache"})})}).then(r=>{if(!r.ok)throw 0;return r.json()}).then(d=>fetch("data/status.json",{cache:"no-cache"}).then(r=>r.ok?r.json():null).catch(()=>null).then(st=>({d,st}))).then(({d,st})=>{
+ V=d.videos;prep();
+ const c=st&&/^(\d{4})-(\d{2})-(\d{2})/.exec(String(st.checked||""));   // 確認の記録（status.json）があれば、最終確認の日付も出す
+ document.getElementById("upd").textContent="最終更新："+d.updated+(c?"　最終確認："+c[1]+"/"+c[2]+"/"+c[3]:"");
+ render();
 }).catch(()=>{list.innerHTML='<p class="empty">動画の情報を読み込めませんでした。時間をおいて、もう一度開いてください。</p>'});

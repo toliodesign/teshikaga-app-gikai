@@ -23,6 +23,7 @@ DEFAULT_RULES = [{"name": "一般質問", "title": ["一般質問"]},
                  {"name": "方針説明", "title": ["執行方針", "行政方針"]},
                  {"name": "議案の審議", "title": ["議案"]}]
 KINDS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "kinds.json")
+STATUS = os.path.join(os.path.dirname(os.path.abspath(__file__)), "..", "data", "status.json")   # 確認の記録
 
 def load_rules(path=KINDS):
     """data/kinds.json の「rules」を読む。読めなければ、内蔵の既定を使う。"""
@@ -154,6 +155,20 @@ def fetch_videos():
     out.sort(key=lambda v: (v["pub"], v["title"]), reverse=True)
     return out
 
+def channel_video_count():
+    """YouTubeが表示しているチャンネルの動画数（取りこぼしの見張りに使う）。取れなくても、更新は止めない。"""
+    try:
+        d = api("channels", part="statistics", id=CHANNEL_ID)
+        return int(d["items"][0]["statistics"]["videoCount"])
+    except (SystemExit, Exception):
+        return None
+
+def write_json_atomic(path, data):
+    tmp = path + ".tmp"
+    with open(tmp, "w", encoding="utf-8") as f:   # 書き込みの途中で止まっても、今のファイルが壊れないようにする
+        json.dump(data, f, ensure_ascii=False, indent=1)
+    os.replace(tmp, path)
+
 def main():
     if not os.environ.get("YOUTUBE_API_KEY"):
         sys.exit("YOUTUBE_API_KEY が設定されていません。")
@@ -172,14 +187,35 @@ def main():
     if others:   # 新しい種類の動画が出たら、GitHubの実行記録に青い知らせとして出る
         msg = "%0A".join(_cmd(t) for t in others[:10]) + ("%%0A…ほか%d本" % (len(others) - 10) if len(others) > 10 else "")
         print("::notice title=種類が「その他」の動画（%d本）::新しい種類なら data/kinds.json に1行足してください。%%0A%s" % (len(others), msg))
-    if old == videos:
-        print("変更なし（%d本）" % len(videos)); return
-    data = {"updated": datetime.now(JST).strftime("%Y-%m-%d %H:%M"), "videos": videos}
-    tmp = OUT + ".tmp"
-    with open(tmp, "w", encoding="utf-8") as f:   # 書き込みの途中で止まっても、今のファイルが壊れないようにする
-        json.dump(data, f, ensure_ascii=False, indent=1)
-    os.replace(tmp, OUT)
-    print("更新しました（%d本）" % len(videos))
+    changed = old != videos
+    now = datetime.now(JST)
+    if changed:
+        write_json_atomic(OUT, {"updated": now.strftime("%Y-%m-%d %H:%M"), "videos": videos})
+        print("更新しました（%d本）" % len(videos))
+    else:
+        print("変更なし（%d本）" % len(videos))
+    # ---- 確認の記録：変更がなくても、「確認した」ことが、あとから見分けられるようにする
+    cc = channel_video_count()
+    top = [{"pub": v["pub"], "title": v["title"], "id": v["id"]} for v in videos[:3]]
+    status = {"checked": now.strftime("%Y-%m-%d %H:%M"), "count": len(videos), "channel_count": cc, "changed": changed, "latest": top}
+    try:
+        old_status = json.load(open(STATUS, encoding="utf-8"))
+    except Exception:
+        old_status = {}
+    if changed or str(old_status.get("checked", ""))[:10] != now.strftime("%Y-%m-%d"):   # 保存は、変更があったときと、1日に1回だけ
+        write_json_atomic(STATUS, status)
+    mismatch = cc is not None and cc != len(videos)
+    if mismatch:   # YouTubeの表示と、取り込んだ数が違うときは、注意を出す
+        print("::warning title=動画の数が一致しません::%s" % _cmd("YouTubeのチャンネルの動画数は %d 本ですが、取り込んだのは %d 本です。公開の設定や、取得の遅れを確認してください。" % (cc, len(videos))))
+    summary = os.environ.get("GITHUB_STEP_SUMMARY")
+    if summary:   # 実行の結果が、GitHubの実行の画面に、文章で残る
+        lines = ["## 動画一覧の確認結果", "",
+                 "- 確認日時：%s（日本時間）" % status["checked"],
+                 "- 取り込んだ動画：%d本（今回の変更：%s）" % (len(videos), "あり" if changed else "なし"),
+                 "- YouTubeのチャンネルの動画数：%s" % ("取得できませんでした" if cc is None else "%d本（%s）" % (cc, "差があります" if mismatch else "一致")),
+                 "- 最新の動画（公開日の新しい順）："]
+        lines += ["  - %s　%s" % (t["pub"], _cmd(t["title"]).replace("%0A", " ")) for t in top]
+        with open(summary, "a", encoding="utf-8") as f: f.write("\n".join(lines) + "\n")
 
 if __name__ == "__main__":
     main()

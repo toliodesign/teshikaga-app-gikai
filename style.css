@@ -1,6 +1,6 @@
-:root{--bg:#f8f4ef;--card:#fff;--ink:#2b2118;--sub:#5c4f44;--line:#c2b3a3;--pri:#7B4B2A;--priink:#fff;--mark:#fff3b0;--ttl:rgba(255,228,92,.667);--mkt:#ff9f1c;--ts:#9b1c1c;--lnk:#0066CC;--fs:18px;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#16110d;--card:#211a14;--ink:#f4ece3;--sub:#cfc0b0;--line:#6a5748;--pri:#e3b98e;--priink:#2a1a0b;--mark:#5b4b00;--ttl:rgba(111,93,0,.667);--mkt:#8a4f00;--ts:#ff9a9a;--lnk:#7db8ff}}
-:root[data-theme="dark"]{--bg:#16110d;--card:#211a14;--ink:#f4ece3;--sub:#cfc0b0;--line:#6a5748;--pri:#e3b98e;--priink:#2a1a0b;--mark:#5b4b00;--ttl:rgba(111,93,0,.667);--mkt:#8a4f00;--ts:#ff9a9a;--lnk:#7db8ff}
+:root{--rb:#9b1c1c;--rbink:#fff;--bg:#f8f4ef;--card:#fff;--ink:#2b2118;--sub:#5c4f44;--line:#c2b3a3;--pri:#7B4B2A;--priink:#fff;--mark:#fff3b0;--ttl:rgba(255,228,92,.667);--mkt:#ff9f1c;--ts:#9b1c1c;--lnk:#0066CC;--fs:18px;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--rb:#ff9a9a;--rbink:#3a0d0d;--bg:#16110d;--card:#211a14;--ink:#f4ece3;--sub:#cfc0b0;--line:#6a5748;--pri:#e3b98e;--priink:#2a1a0b;--mark:#5b4b00;--ttl:rgba(111,93,0,.667);--mkt:#8a4f00;--ts:#ff9a9a;--lnk:#7db8ff}}
+:root[data-theme="dark"]{--rb:#ff9a9a;--rbink:#3a0d0d;--bg:#16110d;--card:#211a14;--ink:#f4ece3;--sub:#cfc0b0;--line:#6a5748;--pri:#e3b98e;--priink:#2a1a0b;--mark:#5b4b00;--ttl:rgba(111,93,0,.667);--mkt:#8a4f00;--ts:#ff9a9a;--lnk:#7db8ff}
 *,*::before,*::after{box-sizing:inherit}
 html{font-size:var(--fs)}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",Meiryo,sans-serif;line-height:1.8}
@@ -74,9 +74,6 @@ h3.sub{font-size:1.05rem;margin:1.1rem 0 .1rem;color:var(--sub)}
 .pop button[aria-pressed="true"] span:first-child::before{content:"✓ "}
 button .sel{font-weight:400}
 .rowbtns{display:inline-flex;flex-wrap:wrap;gap:.5rem}
-.rst{align-self:center;width:1.925rem;height:1.925rem;min-height:0;padding:0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}
-.rst svg{width:.91rem;height:.91rem}
-.rst:disabled{opacity:.45;cursor:not-allowed}
 .pw>button>*,.pop button>*{pointer-events:none}
 .totop{position:fixed;right:calc(1rem + env(safe-area-inset-right,0px));bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:40;width:3rem;height:3rem;min-height:0;padding:0;border-radius:50%;border:2px solid var(--pri);background:var(--pri);color:var(--priink);display:inline-flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.25);opacity:0;visibility:hidden;transform:translateY(.5rem);transition:opacity .2s,transform .2s,visibility .2s}
 .totop.show{opacity:1;visibility:visible;transform:none}
@@ -98,8 +95,11 @@ h1:focus{outline:none}
 .logo{width:1.6rem;height:1.6rem;flex:none}   /* tolio design のロゴ（文字色に合わせて、暗い画面でも見える） */
 input[type=search]::placeholder{color:var(--sub);opacity:1}   /* 検索窓の例文：背景との差を十分に保つ（明るい・暗い画面とも） */
 #views .pw{flex:1 1 4.5rem;display:flex;min-width:0}   /* 議会別・年別・議員別：同じ幅・同じ高さで並べる（画面が狭い・文字が大きいときは、折り返す） */
-#views .pw>button{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:.1rem;padding:.4rem .3rem;line-height:1.3}
+#views .pw>button{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:.45rem;padding:.4rem .3rem;line-height:1.3}
 .bi{width:1.5em;height:1.5em;flex:none}   /* 各ボタンの、上のアイコン */
 .bt{display:inline-flex;align-items:center;white-space:nowrap}
 #views .sel{font-size:.741rem;text-align:center;overflow-wrap:anywhere}
-#views .rst{align-self:center;flex:none}
+.rbtn{display:inline-flex;align-items:center;gap:.35rem;min-height:1.6rem;padding:.1rem .8rem;border:1px solid var(--rb);border-radius:999px;background:var(--rb);color:var(--rbink);font-weight:700;font-size:.741rem;line-height:1.3;box-shadow:0 1px 4px rgba(0,0,0,.25)}   /* 「種類：」の各項目と同じ大きさ（高さ・文字・左右の余白）。色は濃い赤の塗りつぶしで目立たせる */
+.rbtn .ic{width:1em;height:1em}
+.rbtn:disabled{opacity:.5;box-shadow:none;cursor:not-allowed}
+.rbtn:not(:disabled):hover{filter:brightness(1.12)}

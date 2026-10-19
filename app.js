@@ -55,7 +55,7 @@ V.forEach((v,i)=>{
  Object.keys(PSN).forEach(p=>{SNC[PSN[p]]=(SNC[PSN[p]]||0)+1});   // 名字ごとの人数（同じ名字の人がいるか）
 }
 const list=document.getElementById("list"),count=document.getElementById("count"),q=document.getElementById("q");
-const kindsEl=document.getElementById("kinds"),sessBtn=document.getElementById("sessbtn"),sessPop=document.getElementById("sesspop"),yearBtn=document.getElementById("yearbtn"),popEl=document.getElementById("yearpop"),memBtn=document.getElementById("memberbtn"),memPop=document.getElementById("memberpop"),resetBtn=document.getElementById("reset");
+const kindsEl=document.getElementById("kinds"),sessBtn=document.getElementById("sessbtn"),sessPop=document.getElementById("sesspop"),yearBtn=document.getElementById("yearbtn"),popEl=document.getElementById("yearpop"),memBtn=document.getElementById("memberbtn"),memPop=document.getElementById("memberpop");
 list.addEventListener("error",e=>{if(e.target&&e.target.tagName==="IMG")e.target.remove()},true);   // 写真が読めないときは、名前のリンクだけにする
 let view="session",asc=false,kind="",yearSel=null,memSel=null,sessSel=null,popOpen="";
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
@@ -114,7 +114,7 @@ function render(){
  const have=new Set(V.map(v=>v.kind)),names=[];                       // 種類のボタンは、データにある種類から自動で作る
  KR.forEach(r=>{if(have.has(r.name)&&!names.includes(r.name))names.push(r.name)});
  if(have.has("その他"))names.push("その他");
- kindsEl.innerHTML='<span class="meta kl" aria-hidden="true">種類：</span>'+[""].concat(names).map(n=>'<button type="button" class="kb" data-kind="'+esc(n)+'" aria-pressed="'+(kind===n)+'">'+esc(n||"全種類")+'（'+(n?(cnt[n]||0):kc.length)+'）</button>').join("");
+ kindsEl.innerHTML='<span class="meta kl" aria-hidden="true">種類：</span>'+[""].concat(names).map(n=>'<button type="button" class="kb" data-kind="'+esc(n)+'" aria-pressed="'+(kind===n)+'">'+esc(n||"全種類")+'（'+(n?(cnt[n]||0):kc.length)+'）</button>').join("")+'<button type="button" class="rbtn" id="reset" aria-label="検索の条件をすべてリセットする。開いたときの状態に戻ります"'+((k||kind||yearSel!==null||memSel!==null||sessSel!==null||view!=="session"||asc)?"":" disabled")+'>'+ic("arrow-rotate-left")+'リセット</button>';   // 「種類：」の末尾に置く。開いたときと同じ状態のときは、押せない
  const baseK=kind?base.filter(v=>v.kind===kind):base;
  const forYear=baseK.filter(byM),forMem=baseK.filter(byY).filter(byS),forSess=baseK.filter(byY).filter(byM);                // 件数は、ほかの絞り込みを反映する（年の件数は、親にあたる年を決めるものなので、議会の絞り込みは反映しない）
  const cy={},cm={},cs={};forSess.forEach(v=>{cs[v.session]=(cs[v.session]||0)+1});
@@ -151,10 +151,10 @@ function render(){
  const ord=view==="member"?(asc?"あいうえお順（逆）":"あいうえお順"):(asc?"古い順":"新しい順");
  sortBtn.classList.toggle("flip",asc);
  sortBtn.setAttribute("aria-label","並べ替え。いまは"+ord+"。押すと逆になります");
- resetBtn.disabled=!(k||kind||yearSel!==null||memSel!==null||sessSel!==null||view!=="session"||asc);   // 開いたときと同じ状態のときは、リセットは押せない
  count.textContent=arr.length+"本の動画が見つかりました（"+ord+(yearSel!==null?"・"+fyName({fy:yearSel})+"のみ":"")+(sessSel!==null?"・"+sessSel+"のみ":"")+(memSel!==null?"・"+dispName(memSel)+"議員のみ":"")+"）";
 }
-kindsEl.onclick=e=>{const b=e.target.closest("button[data-kind]");if(!b)return;const n=b.dataset.kind;kind=(n===kind)?"":n;render();
+kindsEl.onclick=e=>{if(e.target.closest("#reset")){doReset();return;}   // 末尾の「リセット」
+ const b=e.target.closest("button[data-kind]");if(!b)return;const n=b.dataset.kind;kind=(n===kind)?"":n;render();
  const nb=[...kindsEl.querySelectorAll("button")].find(x=>x.dataset.kind===n);if(nb)nb.focus();};   // 押したあとも、同じボタンに操作が残るようにする
 const sortBtn=document.getElementById("sort");
 sortBtn.onclick=()=>{asc=!asc;render();};
@@ -186,11 +186,12 @@ if(typeof window!=="undefined"&&topBtn){
   window.scrollTo({top:0,behavior:calm?"auto":"smooth"});const t=document.querySelector("h1");if(t)t.focus({preventScroll:true});};   // 操作の位置も、先頭に戻す
 }
 if(typeof window!=="undefined")window.addEventListener("resize",()=>{if(popOpen)place(popOf(popOpen))});   // 画面の向きが変わっても、切れないようにする
-resetBtn.onclick=()=>{   // 押すと、このアプリを開いたときの状態に戻す（検索の言葉・種類・年・議会・議員の解除、「議会ごと」表示、新しい順、ページの先頭）
+function doReset(){   // 押すと、このアプリを開いたときの状態に戻す（検索の言葉・種類・年・議会・議員の解除、「議会別」表示、新しい順）。画面の位置は、そのまま動かさない
  q.value="";kind="";yearSel=null;memSel=null;sessSel=null;popOpen="";view="session";asc=false;
  document.querySelectorAll("[data-view]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.view==="session"));
  render();
- window.scrollTo(0,0);const t=document.querySelector("h1");if(t)t.focus({preventScroll:true});};   // 操作の位置も先頭に戻す（検索欄に移すと、スマホで入力画面が開いてしまうため）
+ const b=kindsEl.querySelector('button[data-kind=""]');if(b)b.focus({preventScroll:true});   // 押したボタンは押せなくなるので、隣の「全種類」に操作を移す（画面は動かさない）
+}
 q.addEventListener("input",render);
 const SZ=[14,16,18,21,24];let fi=2;   // 左から 小（2段階目）・小（1段階目）・標準（中）・大（1段階目）・大（2段階目）
 const fss=document.getElementById("fss"),fsn=document.getElementById("fsn"),fsb=document.getElementById("fsb"),fsl=document.getElementById("fsl");

@@ -119,7 +119,7 @@ function render(){
  const forYear=baseK.filter(byM),forMem=baseK.filter(byY).filter(byS),forSess=baseK.filter(byY).filter(byM);                // 件数は、ほかの絞り込みを反映する（年の件数は、親にあたる年を決めるものなので、議会の絞り込みは反映しない）
  const cy={},cm={},cs={};forSess.forEach(v=>{cs[v.session]=(cs[v.session]||0)+1});
  forYear.forEach(v=>{cy[v.fy]=(cy[v.fy]||0)+1});forMem.forEach(v=>{if(v.pid)cm[v.pid]=(cm[v.pid]||0)+1});
- sessPop.innerHTML=[null].concat(sessList.map(s=>s.name)).map(n=>'<button type="button" data-sess="'+(n===null?"all":esc(n))+'" aria-pressed="'+(sessSel===n)+'"><span>'+(n===null?"すべての議会":esc(n))+'</span><span>（'+(n===null?forSess.length:(cs[n]||0))+'）</span></button>').join("");
+ sessPop.innerHTML=[null].concat(sessList.map(s=>s.name)).map(n=>'<button type="button" data-sess="'+(n===null?"all":esc(n))+'"'+(n!==null&&n.includes("定例会")?' class="bd"':'')+' aria-pressed="'+(sessSel===n)+'"><span>'+(n===null?"すべての議会":esc(n))+'</span><span>（'+(n===null?forSess.length:(cs[n]||0))+'）</span></button>').join("");
  popEl.innerHTML=[null].concat(yrs).map(y=>'<button type="button" data-year="'+(y===null?"all":y)+'" aria-pressed="'+(yearSel===y)+'"><span>'+(y===null?"すべての年":fyName({fy:y}))+'</span><span>（'+(y===null?forYear.length:(cy[y]||0))+'）</span></button>').join("");
  memPop.innerHTML=[null].concat(mems).map(n=>'<button type="button" data-member="'+(n===null?"all":esc(n))+'" aria-pressed="'+(memSel===n)+'"><span>'+(n===null?"すべての議員":esc(((PINFO[n]&&PINFO[n].full)||n)+"議員"+(isFormer(PINFO[n])?"（前議員）":"")))+'</span><span>（'+(n===null?forMem.filter(v=>v.pid).length:(cm[n]||0))+'）</span></button>').join("");
  sessPop.hidden=popOpen!=="session";sessBtn.setAttribute("aria-expanded",String(popOpen==="session"));

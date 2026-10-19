@@ -95,7 +95,7 @@ h1:focus{outline:none}
 .logo{width:1.6rem;height:1.6rem;flex:none}   /* tolio design のロゴ（文字色に合わせて、暗い画面でも見える） */
 input[type=search]::placeholder{color:var(--sub);opacity:1}   /* 検索窓の例文：背景との差を十分に保つ（明るい・暗い画面とも） */
 #views .pw{flex:1 1 4.5rem;display:flex;min-width:0}   /* 議会別・年別・議員別：同じ幅・同じ高さで並べる（画面が狭い・文字が大きいときは、折り返す） */
-#views .pw>button{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;gap:.45rem;padding:.4rem .3rem;line-height:1.3}
+#views .pw>button{width:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.45rem;padding:.4rem .3rem .267rem;line-height:1.3}   /* 上の余白（アイコンの上）と下の余白（文字の下）を、見た目でそろえる：文字の行の高さ分だけ、下の余白を小さくしてある */
 .bi{width:1.5em;height:1.5em;flex:none}   /* 各ボタンの、上のアイコン */
 .bt{display:inline-flex;align-items:center;white-space:nowrap}
 #views .sel{font-size:.741rem;text-align:center;overflow-wrap:anywhere}
@@ -103,3 +103,4 @@ input[type=search]::placeholder{color:var(--sub);opacity:1}   /* 検索窓の例
 .rbtn .ic{width:1em;height:1em}
 .rbtn:disabled{opacity:.5;box-shadow:none;cursor:not-allowed}
 .rbtn:not(:disabled):hover{filter:brightness(1.12)}
+.pop button.bd{font-weight:700}   /* 議会別の一覧：定例会は太字（臨時会・「すべての議会」は標準の太さ） */

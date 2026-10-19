@@ -56,7 +56,6 @@ mark{background:var(--mark);color:inherit}
 .qq{margin:.2rem 0}
 .empty{border:2px dashed var(--line);padding:1rem;border-radius:.4rem}
 h3.sub{font-size:1.05rem;margin:1.1rem 0 .1rem;color:var(--sub)}
-footer{margin:2rem 0 1rem;color:var(--sub);font-size:.85rem}
 .fs-s{font-size:13px}.fs-m{font-size:16px}.fs-l{font-size:21px}
 .row .count{margin:0}
 .ttl{background:linear-gradient(transparent 66.667%,var(--ttl) 66.667%);padding:0 .2em;margin-left:-.2em;-webkit-box-decoration-break:clone;box-decoration-break:clone}
@@ -75,8 +74,8 @@ footer{margin:2rem 0 1rem;color:var(--sub);font-size:.85rem}
 .pop button[aria-pressed="true"] span:first-child::before{content:"✓ "}
 button .sel{font-weight:400}
 .rowbtns{display:inline-flex;flex-wrap:wrap;gap:.5rem}
-.rst{width:2.75rem;height:2.75rem;min-height:0;padding:0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}
-.rst svg{width:1.3rem;height:1.3rem}
+.rst{align-self:center;width:1.925rem;height:1.925rem;min-height:0;padding:0;border-radius:50%;display:inline-flex;align-items:center;justify-content:center}
+.rst svg{width:.91rem;height:.91rem}
 .rst:disabled{opacity:.45;cursor:not-allowed}
 .pw>button>*,.pop button>*{pointer-events:none}
 .totop{position:fixed;right:calc(1rem + env(safe-area-inset-right,0px));bottom:calc(1rem + env(safe-area-inset-bottom,0px));z-index:40;width:3rem;height:3rem;min-height:0;padding:0;border-radius:50%;border:2px solid var(--pri);background:var(--pri);color:var(--priink);display:inline-flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,0,0,.25);opacity:0;visibility:hidden;transform:translateY(.5rem);transition:opacity .2s,transform .2s,visibility .2s}
@@ -89,3 +88,12 @@ h1:focus{outline:none}
 .nb{display:inline-block}   /* タイトルは、「弟子屈町議会」「動画目次」の2つのかたまりで折り返す（かたまりの途中では切れない） */
 .ext{width:.8em;height:.8em;margin-left:.3em;vertical-align:-.05em}   /* 外部リンクの印（新しいタブで開く） */
 .ic-s{width:.8em;height:.8em;margin-left:.35em}   /* 年別・議員別の▾ */
+.kb{border-radius:999px;padding:.1rem .8rem;min-height:1.6rem}   /* 高さを、これまでの2remの80％に縮小 */   /* 「種類：」の各項目：左右を半円にした、丸い枠 */
+.sf{margin:2.5rem auto 1rem;padding-top:1.2rem;border-top:1px solid var(--line);color:var(--sub);font-size:.85rem;text-align:center}
+.sf p{margin:.6rem 0}
+.sf-note{font-size:.9rem}
+.sf-note strong{color:var(--ink)}
+.sf-src{text-align:left;font-size:.8rem}
+.sf-by{display:flex;align-items:center;justify-content:center;gap:.5rem;margin-top:1.2rem!important;font-weight:700}
+.logo{width:1.6rem;height:1.6rem;flex:none}   /* tolio design のロゴ（文字色に合わせて、暗い画面でも見える） */
+input[type=search]::placeholder{color:var(--sub);opacity:1}   /* 検索窓の例文：背景との差を十分に保つ（明るい・暗い画面とも） */

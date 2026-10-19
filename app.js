@@ -143,7 +143,7 @@ function render(){
  const ord=view==="member"?(asc?"あいうえお順（逆）":"あいうえお順"):(asc?"古い順":"新しい順");
  sortBtn.classList.toggle("flip",asc);
  sortBtn.setAttribute("aria-label","並べ替え。いまは"+ord+"。押すと逆になります");
- resetBtn.disabled=!(k||kind||yearSel!==null||memSel!==null);   // 絞り込みがないときは、リセットは押せない
+ resetBtn.disabled=!(k||kind||yearSel!==null||memSel!==null||view!=="session"||asc);   // 開いたときと同じ状態のときは、リセットは押せない
  count.textContent=arr.length+"本の動画が見つかりました（"+ord+(yearSel!==null?"・"+fyName({fy:yearSel})+"のみ":"")+(memSel!==null?"・"+dispName(memSel)+"議員のみ":"")+"）";
 }
 kindsEl.onclick=e=>{const b=e.target.closest("button[data-kind]");if(!b)return;const n=b.dataset.kind;kind=(n===kind)?"":n;render();
@@ -177,7 +177,11 @@ if(typeof window!=="undefined"&&topBtn){
   window.scrollTo({top:0,behavior:calm?"auto":"smooth"});const t=document.querySelector("h1");if(t)t.focus({preventScroll:true});};   // 操作の位置も、先頭に戻す
 }
 if(typeof window!=="undefined")window.addEventListener("resize",()=>{if(popOpen)place(popOf(popOpen))});   // 画面の向きが変わっても、切れないようにする
-resetBtn.onclick=()=>{q.value="";kind="";yearSel=null;memSel=null;popOpen="";render();q.focus();};   // 検索の言葉・種類・年・議員をすべて解除する
+resetBtn.onclick=()=>{   // 押すと、このアプリを開いたときの状態に戻す（検索の言葉・種類・年・議員の解除、「議会ごと」表示、新しい順、ページの先頭）
+ q.value="";kind="";yearSel=null;memSel=null;popOpen="";view="session";asc=false;
+ document.querySelectorAll("[data-view]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.view==="session"));
+ render();
+ window.scrollTo(0,0);const t=document.querySelector("h1");if(t)t.focus({preventScroll:true});};   // 操作の位置も先頭に戻す（検索欄に移すと、スマホで入力画面が開いてしまうため）
 q.addEventListener("input",render);
 const SZ=[14,16,18,21,24];let fi=2;   // 左から 小（2段階目）・小（1段階目）・標準（中）・大（1段階目）・大（2段階目）
 const fss=document.getElementById("fss"),fsn=document.getElementById("fsn"),fsb=document.getElementById("fsb"),fsl=document.getElementById("fsl");

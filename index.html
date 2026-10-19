@@ -23,11 +23,10 @@
 <p class="meta" id="upd"></p>
 <noscript><p class="notice">この目次を使うには、JavaScript を有効にしてください。動画は、<a href="https://www.youtube.com/channel/UCp1bEH7DOpEjf_hjgCmZFlQ">弟子屈町議会の公式YouTubeチャンネル</a>でもご覧になれます。</p></noscript>
 
-<div class="tools" role="group" aria-label="表示の切り替え">
-<button type="button" data-view="session" aria-pressed="true">議会ごと</button>
-<span class="pw"><button type="button" data-view="year" id="yearbtn" aria-pressed="false" aria-expanded="false" aria-controls="yearpop">年別</button><div class="pop" id="yearpop" role="group" aria-label="年を選ぶ" hidden></div></span>
-<span class="pw"><button type="button" data-view="member" id="memberbtn" aria-pressed="false" aria-expanded="false" aria-controls="memberpop">議員別</button><div class="pop" id="memberpop" role="group" aria-label="議員を選ぶ" hidden></div></span>
-<button type="button" data-view="all" aria-pressed="false">すべて</button>
+<div class="tools" id="views" role="group" aria-label="表示の切り替え">
+<span class="pw"><button type="button" data-view="session" id="sessbtn" aria-pressed="true" aria-expanded="false" aria-controls="sesspop"></button><div class="pop" id="sesspop" role="group" aria-label="議会を選ぶ" hidden></div></span>
+<span class="pw"><button type="button" data-view="year" id="yearbtn" aria-pressed="false" aria-expanded="false" aria-controls="yearpop"></button><div class="pop" id="yearpop" role="group" aria-label="年を選ぶ" hidden></div></span>
+<span class="pw"><button type="button" data-view="member" id="memberbtn" aria-pressed="false" aria-expanded="false" aria-controls="memberpop"></button><div class="pop" id="memberpop" role="group" aria-label="議員を選ぶ" hidden></div></span>
 <button type="button" class="rst" id="reset" aria-label="検索の条件をすべてリセットする" title="リセット" disabled><span data-ic="arrow-rotate-left"></span></button>
 </div>
 <div class="tools" id="kinds" role="group" aria-label="動画の種類で絞る"></div>

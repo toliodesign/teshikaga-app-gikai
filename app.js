@@ -55,9 +55,9 @@ V.forEach((v,i)=>{
  Object.keys(PSN).forEach(p=>{SNC[PSN[p]]=(SNC[PSN[p]]||0)+1});   // 名字ごとの人数（同じ名字の人がいるか）
 }
 const list=document.getElementById("list"),count=document.getElementById("count"),q=document.getElementById("q");
-const kindsEl=document.getElementById("kinds"),yearBtn=document.getElementById("yearbtn"),popEl=document.getElementById("yearpop"),memBtn=document.getElementById("memberbtn"),memPop=document.getElementById("memberpop"),resetBtn=document.getElementById("reset");
+const kindsEl=document.getElementById("kinds"),sessBtn=document.getElementById("sessbtn"),sessPop=document.getElementById("sesspop"),yearBtn=document.getElementById("yearbtn"),popEl=document.getElementById("yearpop"),memBtn=document.getElementById("memberbtn"),memPop=document.getElementById("memberpop"),resetBtn=document.getElementById("reset");
 list.addEventListener("error",e=>{if(e.target&&e.target.tagName==="IMG")e.target.remove()},true);   // 写真が読めないときは、名前のリンクだけにする
-let view="session",asc=false,kind="",yearSel=null,memSel=null,popOpen="";
+let view="session",asc=false,kind="",yearSel=null,memSel=null,sessSel=null,popOpen="";
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function hl(s,k){   // 元の文字を先に分けてから、1つずつ安全な文字にする（「amp」などで表示が崩れない）
  s=String(s);if(!k)return esc(s);
@@ -105,23 +105,31 @@ function render(){
  const mems=[...new Set(V.map(v=>v.pid).filter(Boolean))].sort(cmpY);   // 議員の選択肢も、データから自動で作る
  if(yearSel!==null&&!yrs.includes(yearSel))yearSel=null;
  if(memSel!==null&&!mems.includes(memSel))memSel=null;
- const byY=v=>yearSel===null||v.fy===yearSel,byM=v=>memSel===null||v.pid===memSel;
- const kc=base.filter(byY).filter(byM);   // 種類の数字は、検索の言葉・年・議員の絞り込みを反映して数える（種類そのものの絞り込みは除く）
+ const SS={};V.forEach(v=>{if(!SS[v.session])SS[v.session]={name:v.session,fy:v.fy,sd:v.sd}});   // 議会の選択肢も、データから自動で作る
+ if(sessSel!==null&&(!SS[sessSel]||(yearSel!==null&&SS[sessSel].fy!==yearSel)))sessSel=null;   // 年を変えたとき、その年にない議会の選択は外す（年に連動）
+ const sessList=Object.values(SS).filter(s=>yearSel===null||s.fy===yearSel).sort((x,y)=>y.sd-x.sd||(x.name<y.name?1:x.name>y.name?-1:0));   // 選んだ年の議会だけ。新しい順
+ const byY=v=>yearSel===null||v.fy===yearSel,byM=v=>memSel===null||v.pid===memSel,byS=v=>sessSel===null||v.session===sessSel;
+ const kc=base.filter(byY).filter(byM).filter(byS);   // 種類の数字は、検索の言葉・年・議員の絞り込みを反映して数える（種類そのものの絞り込みは除く）
  const cnt={};kc.forEach(v=>{cnt[v.kind]=(cnt[v.kind]||0)+1});
  const have=new Set(V.map(v=>v.kind)),names=[];                       // 種類のボタンは、データにある種類から自動で作る
  KR.forEach(r=>{if(have.has(r.name)&&!names.includes(r.name))names.push(r.name)});
  if(have.has("その他"))names.push("その他");
  kindsEl.innerHTML='<span class="meta kl" aria-hidden="true">種類：</span>'+[""].concat(names).map(n=>'<button type="button" class="kb" data-kind="'+esc(n)+'" aria-pressed="'+(kind===n)+'">'+esc(n||"全種類")+'（'+(n?(cnt[n]||0):kc.length)+'）</button>').join("");
  const baseK=kind?base.filter(v=>v.kind===kind):base;
- const forYear=baseK.filter(byM),forMem=baseK.filter(byY);                // 件数は、ほかの絞り込みを反映する
- const cy={},cm={};forYear.forEach(v=>{cy[v.fy]=(cy[v.fy]||0)+1});forMem.forEach(v=>{if(v.pid)cm[v.pid]=(cm[v.pid]||0)+1});
+ const forYear=baseK.filter(byM),forMem=baseK.filter(byY).filter(byS),forSess=baseK.filter(byY).filter(byM);                // 件数は、ほかの絞り込みを反映する（年の件数は、親にあたる年を決めるものなので、議会の絞り込みは反映しない）
+ const cy={},cm={},cs={};forSess.forEach(v=>{cs[v.session]=(cs[v.session]||0)+1});
+ forYear.forEach(v=>{cy[v.fy]=(cy[v.fy]||0)+1});forMem.forEach(v=>{if(v.pid)cm[v.pid]=(cm[v.pid]||0)+1});
+ sessPop.innerHTML=[null].concat(sessList.map(s=>s.name)).map(n=>'<button type="button" data-sess="'+(n===null?"all":esc(n))+'" aria-pressed="'+(sessSel===n)+'"><span>'+(n===null?"すべての議会":esc(n))+'</span><span>（'+(n===null?forSess.length:(cs[n]||0))+'）</span></button>').join("");
  popEl.innerHTML=[null].concat(yrs).map(y=>'<button type="button" data-year="'+(y===null?"all":y)+'" aria-pressed="'+(yearSel===y)+'"><span>'+(y===null?"すべての年":fyName({fy:y}))+'</span><span>（'+(y===null?forYear.length:(cy[y]||0))+'）</span></button>').join("");
  memPop.innerHTML=[null].concat(mems).map(n=>'<button type="button" data-member="'+(n===null?"all":esc(n))+'" aria-pressed="'+(memSel===n)+'"><span>'+(n===null?"すべての議員":esc(((PINFO[n]&&PINFO[n].full)||n)+"議員"+(isFormer(PINFO[n])?"（前議員）":"")))+'</span><span>（'+(n===null?forMem.filter(v=>v.pid).length:(cm[n]||0))+'）</span></button>').join("");
+ sessPop.hidden=popOpen!=="session";sessBtn.setAttribute("aria-expanded",String(popOpen==="session"));
  popEl.hidden=popOpen!=="year";yearBtn.setAttribute("aria-expanded",String(popOpen==="year"));
  memPop.hidden=popOpen!=="member";memBtn.setAttribute("aria-expanded",String(popOpen==="member"));
- setLabel(yearBtn,'年別'+(yearSel!==null?'<span class="sel">（'+fyName({fy:yearSel})+'）</span>':'')+ic("caret-down","ic-s"));
- setLabel(memBtn,'議員別'+(memSel!==null?'<span class="sel">（'+esc(dispName(memSel))+'議員）</span>':'')+ic("caret-down","ic-s"));
- let arr=baseK.filter(byY).filter(byM);   // 年・議員の絞り込みは、どの表示でも残る
+ const lab=(icon,name,sel)=>ic(icon,"bi")+'<span class="bt">'+name+ic("caret-down","ic-s")+'</span>'+(sel?'<span class="sel">（'+sel+'）</span>':'');   // 上にアイコン、その下に文字
+ setLabel(sessBtn,lab("landmark","議会別",sessSel!==null?esc(sessSel):""));
+ setLabel(yearBtn,lab("calendar-days","年別",yearSel!==null?fyName({fy:yearSel}):""));
+ setLabel(memBtn,lab("user","議員別",memSel!==null?esc(dispName(memSel))+'議員':""));
+ let arr=baseK.filter(byY).filter(byM).filter(byS);   // 年・議会・議員の絞り込みは、どの表示でも残る
  arr.sort((a,b)=>(a.sd-b.sd)*(asc?1:-1)||(a.session<b.session?-1:a.session>b.session?1:0)||a.dk-b.dk||a.cn-b.cn||a._i-b._i);   // 議会（第○回）の順は、並べ替えボタンで新旧を切り替え。同じ議会の中は、日にちの若い順（1日目→2日目…）、同じ日の中は円数字（①②…）の小さい順
  let h="";
  if(view==="member"){
@@ -143,14 +151,14 @@ function render(){
  const ord=view==="member"?(asc?"あいうえお順（逆）":"あいうえお順"):(asc?"古い順":"新しい順");
  sortBtn.classList.toggle("flip",asc);
  sortBtn.setAttribute("aria-label","並べ替え。いまは"+ord+"。押すと逆になります");
- resetBtn.disabled=!(k||kind||yearSel!==null||memSel!==null||view!=="session"||asc);   // 開いたときと同じ状態のときは、リセットは押せない
- count.textContent=arr.length+"本の動画が見つかりました（"+ord+(yearSel!==null?"・"+fyName({fy:yearSel})+"のみ":"")+(memSel!==null?"・"+dispName(memSel)+"議員のみ":"")+"）";
+ resetBtn.disabled=!(k||kind||yearSel!==null||memSel!==null||sessSel!==null||view!=="session"||asc);   // 開いたときと同じ状態のときは、リセットは押せない
+ count.textContent=arr.length+"本の動画が見つかりました（"+ord+(yearSel!==null?"・"+fyName({fy:yearSel})+"のみ":"")+(sessSel!==null?"・"+sessSel+"のみ":"")+(memSel!==null?"・"+dispName(memSel)+"議員のみ":"")+"）";
 }
 kindsEl.onclick=e=>{const b=e.target.closest("button[data-kind]");if(!b)return;const n=b.dataset.kind;kind=(n===kind)?"":n;render();
  const nb=[...kindsEl.querySelectorAll("button")].find(x=>x.dataset.kind===n);if(nb)nb.focus();};   // 押したあとも、同じボタンに操作が残るようにする
 const sortBtn=document.getElementById("sort");
 sortBtn.onclick=()=>{asc=!asc;render();};
-const popOf=o=>o==="year"?popEl:memPop,btnOf=o=>o==="year"?yearBtn:memBtn;
+const popOf=o=>o==="session"?sessPop:(o==="year"?popEl:memPop),btnOf=o=>o==="session"?sessBtn:(o==="year"?yearBtn:memBtn);
 // ポップアップが、画面の左右の端で切れないように、位置を調整する
 const place=p=>{const vw=document.documentElement.clientWidth,m=8;p.style.maxWidth=(vw-2*m)+"px";p.style.left="0px";
  if(!p.getBoundingClientRect)return;
@@ -160,12 +168,13 @@ const setPop=(o,focus)=>{popOpen=o;render();if(o)place(popOf(o));if(o&&focus){co
 document.querySelectorAll("[data-view]").forEach(b=>b.onclick=()=>{
  const was=popOpen;view=b.dataset.view;
  document.querySelectorAll("[data-view]").forEach(x=>x.setAttribute("aria-pressed",x===b));
- const which=(view==="year"||view==="member")?view:"";
+ const which=(view==="session"||view==="year"||view==="member")?view:"";
  setPop(which&&was!==which?which:"",true);   // 「年別」「議員別」を押すと、選択肢が開く（もう一度押すと閉じる）
 });
-popEl.onclick=e=>{const b=e.target.closest("button[data-year]");if(!b)return;yearSel=b.dataset.year==="all"?null:+b.dataset.year;popOpen="";render();yearBtn.focus();};
+sessPop.onclick=e=>{const b=e.target.closest("button[data-sess]");if(!b)return;sessSel=b.dataset.sess==="all"?null:b.dataset.sess;popOpen="";render();sessBtn.focus();};
+popEl.onclick=e=>{const b=e.target.closest("button[data-year]");if(!b)return;yearSel=b.dataset.year==="all"?null:+b.dataset.year;popOpen="";render();yearBtn.focus();};   // 年を変えると、議会の選択肢も、その年のものに変わる
 memPop.onclick=e=>{const b=e.target.closest("button[data-member]");if(!b)return;memSel=b.dataset.member==="all"?null:b.dataset.member;popOpen="";render();memBtn.focus();};
-[popEl,memPop].forEach(p=>p.addEventListener("keydown",e=>{if(e.key!=="ArrowDown"&&e.key!=="ArrowUp")return;const bs=[...p.querySelectorAll("button")],i=bs.indexOf(document.activeElement);if(!bs.length)return;e.preventDefault();bs[(i+(e.key==="ArrowDown"?1:-1)+bs.length)%bs.length].focus();}));
+[sessPop,popEl,memPop].forEach(p=>p.addEventListener("keydown",e=>{if(e.key!=="ArrowDown"&&e.key!=="ArrowUp")return;const bs=[...p.querySelectorAll("button")],i=bs.indexOf(document.activeElement);if(!bs.length)return;e.preventDefault();bs[(i+(e.key==="ArrowDown"?1:-1)+bs.length)%bs.length].focus();}));
 document.addEventListener("keydown",e=>{if(e.key==="Escape"&&popOpen){const bt=btnOf(popOpen);setPop("");bt.focus();}});
 document.addEventListener("click",e=>{if(popOpen&&!e.composedPath().some(n=>n.classList&&n.classList.contains("pw")))setPop("");});   // 外を押したら閉じる
 // 「トップに戻る」ボタン：少しスクロールすると右下に出て、押すと先頭へ戻る
@@ -177,8 +186,8 @@ if(typeof window!=="undefined"&&topBtn){
   window.scrollTo({top:0,behavior:calm?"auto":"smooth"});const t=document.querySelector("h1");if(t)t.focus({preventScroll:true});};   // 操作の位置も、先頭に戻す
 }
 if(typeof window!=="undefined")window.addEventListener("resize",()=>{if(popOpen)place(popOf(popOpen))});   // 画面の向きが変わっても、切れないようにする
-resetBtn.onclick=()=>{   // 押すと、このアプリを開いたときの状態に戻す（検索の言葉・種類・年・議員の解除、「議会ごと」表示、新しい順、ページの先頭）
- q.value="";kind="";yearSel=null;memSel=null;popOpen="";view="session";asc=false;
+resetBtn.onclick=()=>{   // 押すと、このアプリを開いたときの状態に戻す（検索の言葉・種類・年・議会・議員の解除、「議会ごと」表示、新しい順、ページの先頭）
+ q.value="";kind="";yearSel=null;memSel=null;sessSel=null;popOpen="";view="session";asc=false;
  document.querySelectorAll("[data-view]").forEach(x=>x.setAttribute("aria-pressed",x.dataset.view==="session"));
  render();
  window.scrollTo(0,0);const t=document.querySelector("h1");if(t)t.focus({preventScroll:true});};   // 操作の位置も先頭に戻す（検索欄に移すと、スマホで入力画面が開いてしまうため）

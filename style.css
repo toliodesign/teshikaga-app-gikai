@@ -107,6 +107,6 @@ input[type=search]::placeholder{color:var(--sub);opacity:1}   /* 検索窓の例
 
 .ic-mem{width:1.15em;height:1.15em;margin-right:.45em;flex:none}   /* 議員名の前の「円の中に人型」（リンクと同じ色。人型は透けて白抜きに見える） */
 
-a.t{box-sizing:border-box;display:inline-flex;align-items:center;gap:.3em;height:1.5rem;padding:.1rem .55rem 0 .45rem;margin:.05rem .4rem .05rem 0;border:2px solid var(--lnk);border-radius:999px;background:var(--tbg);color:var(--lnk);text-decoration:none;line-height:1;vertical-align:middle;position:relative;top:-.08em}   /* 時刻のリンク：「（▶） 0:47」の丸いボタン。余白は、押しやすさ（高さ24px以上）を保てる範囲で最小に */
+a.t{box-sizing:border-box;display:inline-flex;align-items:center;gap:.3em;height:1.5rem;padding:.1rem .55rem 0 .45rem;margin:.05rem .4rem .05rem 0;border:2px solid var(--lnk);border-radius:999px 0 0 999px;background:var(--tbg);color:var(--lnk);text-decoration:none;line-height:1;vertical-align:middle;position:relative;top:-.08em}   /* 時刻のリンク：「（▶） 0:47」の丸いボタン。余白は、押しやすさ（高さ24px以上）を保てる範囲で最小に */
 a.t:hover{background:var(--lnk);color:var(--tin)}
-.ic-play{width:.85em;height:.85em;flex:none}   /* 丸で囲んだ▶：「質問要旨」の▶（枠なし）と形で区別する */
+.ic-play{width:.85em;height:.85em;flex:none;overflow:visible;margin-top:-.05rem}   /* 枠の上の余白(.1rem)ぶん中身が下がるので、アイコンだけ半分戻して、枠の上下の中央に置く。実際の描画で上下の余白を測って決めた値 */

@@ -1,0 +1,31 @@
+{
+ "name": "弟子屈町議会 動画目次（非公式）",
+ "short_name": "議会動画目次",
+ "description": "弟子屈町議会の公式YouTubeチャンネルの動画を、探しやすく並べた非公式の目次サイトです。",
+ "lang": "ja",
+ "start_url": "./",
+ "scope": "./",
+ "display": "standalone",
+ "background_color": "#7B4B2A",
+ "theme_color": "#7B4B2A",
+ "icons": [
+  {
+   "src": "icon-192.png",
+   "sizes": "192x192",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "icon-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "any"
+  },
+  {
+   "src": "icon-maskable-512.png",
+   "sizes": "512x512",
+   "type": "image/png",
+   "purpose": "maskable"
+  }
+ ]
+}

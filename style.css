@@ -1,13 +1,14 @@
-:root{--rb:#9b1c1c;--rbink:#fff;--bg:#f8f4ef;--card:#fff;--ink:#2b2118;--sub:#5c4f44;--line:#c2b3a3;--pri:#7B4B2A;--priink:#fff;--mark:#fff3b0;--ttl:rgba(255,228,92,.667);--mkt:#ff9f1c;--ts:#9b1c1c;--lnk:#0066CC;--fs:18px;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--rb:#ff9a9a;--rbink:#3a0d0d;--bg:#16110d;--card:#211a14;--ink:#f4ece3;--sub:#cfc0b0;--line:#6a5748;--pri:#e3b98e;--priink:#2a1a0b;--mark:#5b4b00;--ttl:rgba(111,93,0,.667);--mkt:#8a4f00;--ts:#ff9a9a;--lnk:#7db8ff}}
-:root[data-theme="dark"]{--rb:#ff9a9a;--rbink:#3a0d0d;--bg:#16110d;--card:#211a14;--ink:#f4ece3;--sub:#cfc0b0;--line:#6a5748;--pri:#e3b98e;--priink:#2a1a0b;--mark:#5b4b00;--ttl:rgba(111,93,0,.667);--mkt:#8a4f00;--ts:#ff9a9a;--lnk:#7db8ff}
+:root{--rb:#9b1c1c;--rbink:#fff;--bg:#f8f4ef;--card:#fff;--ink:#2b2118;--sub:#5c4f44;--line:#c2b3a3;--pri:#7B4B2A;--priink:#fff;--mark:#fff3b0;--ttl:rgba(255,228,92,.667);--mkt:#ff9f1c;--ts:#9b1c1c;--lnk:#0066CC;--tbg:#e8f1fb;--tin:#fff;--fs:18px;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--rb:#ff9a9a;--rbink:#3a0d0d;--bg:#16110d;--card:#211a14;--ink:#f4ece3;--sub:#cfc0b0;--line:#6a5748;--pri:#e3b98e;--priink:#2a1a0b;--mark:#5b4b00;--ttl:rgba(111,93,0,.667);--mkt:#8a4f00;--ts:#ff9a9a;--lnk:#7db8ff;--tbg:#1b2c40;--tin:#0b1a2b}}
+:root[data-theme="dark"]{--rb:#ff9a9a;--rbink:#3a0d0d;--bg:#16110d;--card:#211a14;--ink:#f4ece3;--sub:#cfc0b0;--line:#6a5748;--pri:#e3b98e;--priink:#2a1a0b;--mark:#5b4b00;--ttl:rgba(111,93,0,.667);--mkt:#8a4f00;--ts:#ff9a9a;--lnk:#7db8ff;--tbg:#1b2c40;--tin:#0b1a2b}
 *,*::before,*::after{box-sizing:inherit}
 html{font-size:var(--fs)}
 body{margin:0;background:var(--bg);color:var(--ink);font-family:"BIZ UDPGothic","Hiragino Sans","Yu Gothic",Meiryo,sans-serif;line-height:1.8}
 .wrap{max-width:46rem;margin:0 auto;padding:1rem}
-h1{font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic",Meiryo,sans-serif;font-size:min(2.25rem,calc((100vw - 2rem)/6.5));font-weight:300;letter-spacing:.06em;line-height:1.35;margin:.6rem 0 1rem;overflow-wrap:anywhere}
+h1{font-family:"Noto Sans JP","Hiragino Sans","Yu Gothic",Meiryo,sans-serif;font-size:min(3.375rem,calc((100vw - 2rem)/6.5));font-weight:300;letter-spacing:.06em;line-height:1.35;margin:.6rem 0 1rem;overflow-wrap:anywhere}
 h2{font-size:1.2rem;margin:1.6rem 0 .6rem;padding-left:.6rem;border-left:.4rem solid var(--pri)}
-.notice{border:2px solid var(--line);background:var(--card);padding:.7rem .9rem;border-radius:.4rem;font-size:.9rem;color:var(--sub)}
+.notice{margin:.8rem 0;font-size:.9rem;color:var(--sub)}   /* 枠・背景・余白は付けない */
+noscript .notice{border:2px solid var(--line);background:var(--card);padding:.7rem .9rem;border-radius:.4rem}   /* JavaScriptが無効のときの案内だけは、目立つよう枠を残す */
 .notice strong{color:var(--ink)}
 .tools{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0}
 button,input{font:inherit;color:inherit}
@@ -41,12 +42,11 @@ summary .ic{width:.8em;height:.8em;margin-right:.45em;color:var(--lnk);vertical-
 details[open]>summary .ic-r,details:not([open])>summary .ic-d{display:none}   /* 閉じているときは▶、開くと▼ */
 ul.items{margin:.3rem 0;padding-left:0;list-style:none}
 ul.items li{padding:.2rem 0;border-top:1px solid var(--line)}
-.t{font-variant-numeric:tabular-nums;font-weight:700;margin-right:.6rem}
+.t{font-family:"BIZ UDGothic","BIZ UDPGothic","Hiragino Sans","Yu Gothic",Meiryo,sans-serif;font-variant-numeric:tabular-nums;font-weight:700;margin-right:.6rem}   /* 時刻：太字・UDフォント（数字が半角幅で、これまでより約24％せまい） */
 a{color:var(--lnk);font-weight:700;text-decoration:underline}   /* リンクは、すべて #0066CC＋下線（暗い画面では、読めるよう明るい青に切り替わる） */
 mark{background:var(--mark);color:inherit}
 .gist{white-space:pre-line}
-.mem{display:inline-flex;align-items:center;gap:.7rem;margin:.4rem 0;color:var(--lnk);font-weight:700;text-decoration:none}
-.mem img{width:3.5rem;height:4.5rem;object-fit:cover;object-position:top;border-radius:.3rem;border:1px solid var(--line);background:var(--card)}
+.mem{display:inline-flex;align-items:center;margin:.4rem 0;color:var(--lnk);font-weight:700;text-decoration:none}
 .mem span{text-decoration:underline;text-underline-offset:.2em}   /* 名前の下の文字をなくしたので、リンクだとわかるよう、名前に下線を引く */
 .mem:hover span{text-decoration-thickness:.12em}
 .kb{min-height:2.5rem;padding:.2rem .8rem;border:1px solid var(--pri);border-radius:.3rem;background:transparent;color:var(--pri);font-weight:700;font-size:.95rem}
@@ -104,3 +104,9 @@ input[type=search]::placeholder{color:var(--sub);opacity:1}   /* 検索窓の例
 .rbtn:disabled{opacity:.5;box-shadow:none;cursor:not-allowed}
 .rbtn:not(:disabled):hover{filter:brightness(1.12)}
 .pop button.bd{font-weight:700}   /* 議会別の一覧：定例会は太字（臨時会・「すべての議会」は標準の太さ） */
+
+.ic-mem{width:1.15em;height:1.15em;margin-right:.45em;flex:none}   /* 議員名の前の「円の中に人型」（リンクと同じ色。人型は透けて白抜きに見える） */
+
+a.t{display:inline-flex;align-items:center;gap:.3em;min-height:1.5rem;padding:.02rem .55rem .02rem .45rem;margin:.05rem .4rem .05rem 0;border:2px solid var(--lnk);border-radius:999px;background:var(--tbg);color:var(--lnk);text-decoration:none;line-height:1.2;vertical-align:middle}   /* 時刻のリンク：「（▶） 0:47」の丸いボタン。余白は、押しやすさ（高さ24px以上）を保てる範囲で最小に */
+a.t:hover{background:var(--lnk);color:var(--tin)}
+.ic-play{width:.85em;height:.85em;flex:none}   /* 丸で囲んだ▶：「質問要旨」の▶（枠なし）と形で区別する */

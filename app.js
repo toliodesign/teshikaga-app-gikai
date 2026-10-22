@@ -3,19 +3,17 @@ const SUMI=ic("caret-right","ic-r")+ic("caret-down","ic-d");   // 開閉部分�
 document.querySelectorAll("[data-ic]").forEach(el=>{el.outerHTML=ic(el.dataset.ic,el.dataset.cls||"")});   // ページの中のアイコンの場所に、アイコンを入れる
 // ---- 安全のための点検（データは外から来るものとして扱い、決まった形のものだけを画面に出す）
 const ID_RE=/^[\w-]{11}$/, TIME_RE=/^\d+:\d{2}(?::\d{2})?$/, TOWN="https://www.town.teshikaga.hokkaido.jp/";
-const okImg=u=>typeof u==="string"&&(u.startsWith(TOWN)||u.startsWith("data:image/svg+xml,"));
 const W=v=>"https://www.youtube.com/watch?v="+v.id;
 const sec=t=>t.split(":").reduce((a,x)=>a*60+ +x,0);
 const TRE=/(\d+:\d{2}(?::\d{2})?)(?!\d)/;
 const itemText=(v,t,k)=>t?t.split(TRE).map((p,i)=>i%2?tl(v,p):hl(p,k)).join(""):"この場面から再生";
 const memChip=n=>{const m=PINFO[n];if(!m||typeof m.page!=="string"||!m.page.startsWith(TOWN))return"";const f=esc(m.full||n)+"議員"+(isFormer(m)?"（前議員）":"");
  return '<a class="mem" href="'+esc(m.page)+'" target="_blank" rel="noopener" aria-label="'+f+'。弟子屈町公式サイトの議員名簿を新しいタブで開く">'
-  +(okImg(m.photo)?'<img src="'+esc(m.photo)+'" alt="" width="56" height="72" loading="lazy">':'')
-  +'<span>'+f+ic("arrow-up-right-from-square","ext")+'</span></a>';};
+  +ic("circle-user","ic-mem")+'<span>'+f+ic("arrow-up-right-from-square","ext")+'</span></a>';};
 const qBlock=(v,b,k)=>'<div class="qb"><p class="qh">'+(b.time?tl(v,b.time)+' ':'')+hl(b.label||"",k)+'</p>'
  +(b.q?'<p class="qq"><b>【質問事項】</b>'+hl(b.q,k)+'</p>':'')
  +(b.gist?'<details'+(k&&b.gist.toLowerCase().includes(k.toLowerCase())?' open':'')+'><summary>'+SUMI+'【質問要旨】</summary><p class="gist">'+hl(b.gist,k)+'</p></details>':'')+'</div>';
-const tl=(v,t)=>{t=String(t);return v.id&&TIME_RE.test(t)?'<a class="t" href="'+W(v)+'&t='+sec(t)+'s" target="_blank" rel="noopener" aria-label="'+t+'から再生（新しいタブで開く）">'+t+'</a>':'<span class="t">'+esc(t)+'</span>'};
+const tl=(v,t)=>{t=String(t);return v.id&&TIME_RE.test(t)?'<a class="t" href="'+W(v)+'&t='+sec(t)+'s" target="_blank" rel="noopener" aria-label="'+t+'から再生（新しいタブで開く）">'+ic("circle-play","ic-play")+t+'</a>':'<span class="t">'+esc(t)+'</span>'};
 let V=[];
 const setLabel=(b,html)=>{if(b.dataset.lab!==html){b.dataset.lab=html;b.innerHTML=html}};
 function prep(){
@@ -56,7 +54,6 @@ V.forEach((v,i)=>{
 }
 const list=document.getElementById("list"),count=document.getElementById("count"),q=document.getElementById("q");
 const kindsEl=document.getElementById("kinds"),sessBtn=document.getElementById("sessbtn"),sessPop=document.getElementById("sesspop"),yearBtn=document.getElementById("yearbtn"),popEl=document.getElementById("yearpop"),memBtn=document.getElementById("memberbtn"),memPop=document.getElementById("memberpop");
-list.addEventListener("error",e=>{if(e.target&&e.target.tagName==="IMG")e.target.remove()},true);   // 写真が読めないときは、名前のリンクだけにする
 let view="session",asc=false,kind="",yearSel=null,memSel=null,sessSel=null,popOpen="";
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 function hl(s,k){   // 元の文字を先に分けてから、1つずつ安全な文字にする（「amp」などで表示が崩れない）

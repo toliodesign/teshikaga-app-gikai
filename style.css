@@ -48,7 +48,8 @@ mark{background:var(--mark);color:inherit}
 .gist{white-space:pre-line}
 .mem{display:inline-flex;align-items:center;margin:.4rem 0;color:var(--lnk);font-weight:700;text-decoration:none}
 .mem span{text-decoration:underline;text-underline-offset:.2em}   /* 名前の下の文字をなくしたので、リンクだとわかるよう、名前に下線を引く */
-.card .mem{font-size:1.3em}   /* 動画の枠の中の議員名：1.3倍（議員別の見出し下の名前は、そのまま） */
+.card .mem{font-size:1.2em}   /* 動画の枠の中の議員名：1.2倍（議員別の見出し下の名前は、そのまま） */
+.card .mem span{text-decoration:none}   /* 動画の枠の中の議員名は、下線をつけない */
 .mem:hover span{text-decoration-thickness:.12em}
 .kb{min-height:2.5rem;padding:.2rem .8rem;border:1px solid var(--pri);border-radius:.3rem;background:transparent;color:var(--pri);font-weight:700;font-size:.95rem}
 .kb[aria-pressed="true"]{background:var(--pri);color:var(--priink)}
